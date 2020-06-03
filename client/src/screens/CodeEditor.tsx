@@ -4,9 +4,9 @@ import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-monokai";
 import "./CodeEditor.scss";
 import { noa } from "../noa/noaSetup";
+import ReactResizeDetector from "react-resize-detector";
 
-const DEFAULT_CODE =
-`for (var i = 0; i < 128; i++) {
+const DEFAULT_CODE = `for (var i = 0; i < 128; i++) {
   for (var k = 0; k < 128; k++) {
     if (Math.random() > 0.2) {
       setBlock(2, i, 1, k);
@@ -16,7 +16,10 @@ const DEFAULT_CODE =
 
 export interface CodeEditorProps {}
 
-export interface CodeEditorState {}
+export interface CodeEditorState {
+  editorWidth: number;
+  editorHeight: number;
+}
 
 interface JSInterpreter {}
 
@@ -43,15 +46,18 @@ export default class CodeEditor extends React.PureComponent<
   constructor(props: CodeEditorProps) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      editorHeight: 500,
+      editorWidth: 500
+    };
   }
 
   onClickRun = () => {
     if (noa) {
       noa.world.invalidateVoxelsInAABB({
         base: [0, 0, 0],
-        max: [128, 128, 128]
-      })
+        max: [128, 128, 128],
+      });
       // noa.worldName = Math.random() + "";
     }
 
@@ -61,15 +67,14 @@ export default class CodeEditor extends React.PureComponent<
     // Set chunkData directly
     // Then invalidate all voxels (change world name)
 
-    setTimeout(() => {      
+    setTimeout(() => {
       try {
         //@ts-ignore
         var myInterpreter = new Interpreter(this.editorCode, initFunc);
         myInterpreter.run();
-      } catch(e) {
+      } catch (e) {
         console.error(e);
       }
-
     }, 5000);
   };
 
@@ -79,7 +84,14 @@ export default class CodeEditor extends React.PureComponent<
 
   onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     event.stopPropagation();
-  }
+  };
+
+  onResize = (width: number, height: number) => {
+    this.setState({
+      editorWidth: width,
+      editorHeight: height
+    });
+  };
 
   public render() {
     return (
@@ -87,16 +99,20 @@ export default class CodeEditor extends React.PureComponent<
         <div className="CodeEditor-Header">
           <button onClick={this.onClickRun}>Run</button>
         </div>
-        <AceEditor
-          className="CodeEditor-Editor"
-          mode="javascript"
-          theme="monokai"
-          name="CodeEditor"
-          onChange={this.onEditorChange}
-          defaultValue={DEFAULT_CODE}
-          editorProps={{ $blockScrolling: false }}
-          setOptions={{ useWorker: false }}
-        />
+        <div className="CodeEditor-Editor">
+          <ReactResizeDetector refreshMode="debounce" refreshRate={100} handleWidth handleHeight onResize={this.onResize} />
+          <AceEditor
+            mode="javascript"
+            theme="monokai"
+            name="CodeEditor"
+            onChange={this.onEditorChange}
+            defaultValue={DEFAULT_CODE}
+            editorProps={{ $blockScrolling: false }}
+            setOptions={{ useWorker: false }}
+            width={this.state.editorWidth + "px"}
+            height={this.state.editorHeight + "px"}
+          />
+        </div>
       </div>
     );
   }

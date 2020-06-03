@@ -5,14 +5,25 @@ import "ace-builds/src-noconflict/theme-monokai";
 import "./CodeEditor.scss";
 import { noa } from "../noa/noaSetup";
 import ReactResizeDetector from "react-resize-detector";
+import { runUserCode } from "../noa/worldGen";
 
-const DEFAULT_CODE = `for (var i = 0; i < 128; i++) {
-  for (var k = 0; k < 128; k++) {
-    if (Math.random() > 0.2) {
-      setBlock(2, i, 1, k);
+const DEFAULT_CODE = 
+`var a = 64;
+var b = 20;
+var c = 64;
+var r = 20;
+
+for (var i = a-r ; i < a + r; i++) {
+  for (var j = b - r; j < b + r; j++) {
+    for (var k = c - r; k < c + r; k++) {
+        var color = (i + k) % 2 + 1;
+        if (Math.pow((i - a), 2) + Math.pow((j - b), 2) + Math.pow((k - c), 2) < r * r) {
+            setBlock(color, i, j, k);
+        }
     }
   }
-}`;
+}
+`;
 
 export interface CodeEditorProps {}
 
@@ -20,23 +31,10 @@ export interface CodeEditorState {
   editorWidth: number;
   editorHeight: number;
   editorValue: string;
+  runningCode: boolean;
 }
 
 interface JSInterpreter {}
-
-const initFunc = function (interpreter: any, globalObject: any) {
-  function wrapper(id: number, x: string, y: string, z: string) {
-    if (noa) {
-      noa.setBlock(id, x, y, z);
-    }
-  }
-
-  interpreter.setProperty(
-    globalObject,
-    "setBlock",
-    interpreter.createNativeFunction(wrapper)
-  );
-};
 
 export default class CodeEditor extends React.PureComponent<
   CodeEditorProps,
@@ -48,35 +46,27 @@ export default class CodeEditor extends React.PureComponent<
     this.state = {
       editorHeight: 500,
       editorWidth: 500,
-      editorValue: DEFAULT_CODE
+      editorValue: DEFAULT_CODE,
+      runningCode: false
     };
   }
 
+  componentDidMount() {
+    this.onClickRun();
+  }
+
   onClickRun = () => {
-    if (noa) {
-      noa.world.invalidateVoxelsInAABB({
-        base: [0, 0, 0],
-        max: [128, 128, 128],
-      });
-      // noa.worldName = Math.random() + "";
-    }
-
-    // Run interpreter
-    // Reset all chunks in drawing scope to 0
-    // Draw directly to array buffer
-    // Set chunkData directly
-    // Then invalidate all voxels (change world name)
-
-    setTimeout(() => {
-      try {
-        //@ts-ignore
-        var myInterpreter = new Interpreter(this.state.editorValue, initFunc);
-        myInterpreter.run();
-      } catch (e) {
-        console.error(e);
-      }
-    }, 5000);
+    this.setState({
+      runningCode: true
+    });
+    runUserCode(this.state.editorValue, this.onCodeRunningDone);
   };
+
+  onCodeRunningDone = () => {
+    this.setState({
+      runningCode: false
+    });
+  }
 
   onEditorChange = (newValue: string, event: any) => {
     this.setState({
@@ -100,6 +90,7 @@ export default class CodeEditor extends React.PureComponent<
       <div onKeyDown={this.onKeyDown} className="CodeEditor" id="CodeEditor">
         <div className="CodeEditor-Header">
           <button onClick={this.onClickRun}>Run</button>
+          <span>{this.state.runningCode ? "Running" : "Done"}</span>
         </div>
         <div className="CodeEditor-Editor">
           <ReactResizeDetector refreshMode="debounce" refreshRate={100} handleWidth handleHeight onResize={this.onResize} />

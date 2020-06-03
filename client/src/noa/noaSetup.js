@@ -10,15 +10,17 @@
 // Engine options object, and engine instantiation:
 import Engine from "noa-engine";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
+import {chunkMap} from "./worldGen";
 export let noa;
 
-const DIM = 128;
+export const DIM = 128;
+export const CHUNK_SIZE = 32;
 
 export function initNoa() {
   var opts = {
     debug: true,
     showFPS: true,
-    chunkSize: 32,
+    chunkSize: CHUNK_SIZE,
     chunkAddDistance: 6.5,
     chunkRemoveDistance: 7.5,
     domElement: document.getElementById("NoaContainer"),
@@ -69,11 +71,11 @@ export function initNoa() {
       return 0;
     }
 
-    if (y < 0) {
+    if (y < -1) {
       return 0;
     }
 
-    if (y === 0) {
+    if (y === -1) {
       return grassID;
     }
 
@@ -82,6 +84,15 @@ export function initNoa() {
 
   // register for world events
   noa.world.on("worldDataNeeded", function (id, data, x, y, z) {
+    // If chunk ID exists, then return from cache, otherwise run loop
+    // console.log(id);
+    if (chunkMap.has(id)) {
+      let chunkData = chunkMap.get(id);
+      data.data.set(chunkData.data);
+      noa.world.setChunkData(id, data);
+      return;
+    }
+
     // `id` - a unique string id for the chunk
     // `data` - an `ndarray` of voxel ID data (see: https://github.com/scijs/ndarray)
     // `x, y, z` - world coords of the corner of the chunk

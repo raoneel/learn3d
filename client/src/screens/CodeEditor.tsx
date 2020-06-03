@@ -19,6 +19,7 @@ export interface CodeEditorProps {}
 export interface CodeEditorState {
   editorWidth: number;
   editorHeight: number;
+  editorValue: string;
 }
 
 interface JSInterpreter {}
@@ -41,14 +42,13 @@ export default class CodeEditor extends React.PureComponent<
   CodeEditorProps,
   CodeEditorState
 > {
-  editorCode: string = DEFAULT_CODE;
-
   constructor(props: CodeEditorProps) {
     super(props);
 
     this.state = {
       editorHeight: 500,
-      editorWidth: 500
+      editorWidth: 500,
+      editorValue: DEFAULT_CODE
     };
   }
 
@@ -70,7 +70,7 @@ export default class CodeEditor extends React.PureComponent<
     setTimeout(() => {
       try {
         //@ts-ignore
-        var myInterpreter = new Interpreter(this.editorCode, initFunc);
+        var myInterpreter = new Interpreter(this.state.editorValue, initFunc);
         myInterpreter.run();
       } catch (e) {
         console.error(e);
@@ -79,7 +79,9 @@ export default class CodeEditor extends React.PureComponent<
   };
 
   onEditorChange = (newValue: string, event: any) => {
-    this.editorCode = newValue;
+    this.setState({
+      editorValue: newValue
+    })
   };
 
   onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -106,7 +108,7 @@ export default class CodeEditor extends React.PureComponent<
             theme="monokai"
             name="CodeEditor"
             onChange={this.onEditorChange}
-            defaultValue={DEFAULT_CODE}
+            value={this.state.editorValue}
             editorProps={{ $blockScrolling: false }}
             setOptions={{ useWorker: false }}
             width={this.state.editorWidth + "px"}

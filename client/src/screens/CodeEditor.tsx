@@ -45,6 +45,7 @@ export default class CodeEditor extends React.PureComponent<
   CodeEditorState
 > {
   blocklyWorkspace: Blockly.WorkspaceSvg | undefined;
+  aceEditor: any;
 
   constructor(props: CodeEditorProps) {
     super(props);
@@ -61,6 +62,10 @@ export default class CodeEditor extends React.PureComponent<
   componentDidMount() {
     this.initializeBlockly();
     this.onClickRun();
+  }
+
+  onAceEditorLoad = (editor: any) => {
+    this.aceEditor = editor;
   }
 
   initializeBlockly() {
@@ -141,6 +146,11 @@ export default class CodeEditor extends React.PureComponent<
         if (this.blocklyWorkspace) {
           Blockly.svgResize(this.blocklyWorkspace);
         }
+      } else if (this.state.editorType === "javascript") {
+        if (this.aceEditor) {
+          this.aceEditor.resize();
+          this.aceEditor.renderer.updateFull();
+        }
       }
     });
   };
@@ -161,6 +171,7 @@ export default class CodeEditor extends React.PureComponent<
             onResize={this.onResize}
           />
           <AceEditor
+            onLoad={this.onAceEditorLoad}
             mode="javascript"
             theme="monokai"
             name="CodeEditor"

@@ -7,6 +7,9 @@ import { noa } from "../noa/noaSetup";
 import ReactResizeDetector from "react-resize-detector";
 import { runUserCode } from "../noa/worldGen";
 import * as Blockly from "blockly";
+import { BlocklyToolbox } from "../components/BlocklyToolbox";
+import "../blockly/customBlocks";
+import { BlocklyWorkspace } from "../components/BlocklyWorkspace";
 
 const DEFAULT_CODE = `var a = 64;
 var b = 20;
@@ -56,15 +59,39 @@ export default class CodeEditor extends React.PureComponent<
   }
 
   componentDidMount() {
+    this.initializeBlockly();
+    this.onClickRun();
+  }
+
+  initializeBlockly() {
     let toolbox = document.getElementById("toolbox");
 
     if (toolbox) {
       this.blocklyWorkspace = Blockly.inject("blocklyDiv", {
         toolbox,
       });
+
+      let workspaceBlocks = document.getElementById("workspaceBlocks"); 
+      /* Load blocks to workspace. */
+
+      if (workspaceBlocks) {
+        Blockly.Xml.domToWorkspace(workspaceBlocks, this.blocklyWorkspace);
+      }
+
+      this.blocklyWorkspace.addChangeListener(this.onBlocklyUpdate);
+    }
+  }
+
+  onBlocklyUpdate = () => {
+    if (!this.blocklyWorkspace) {
+      return;
     }
 
-    this.onClickRun();
+    //@ts-ignore
+    let code = Blockly.JavaScript.workspaceToCode(this.blocklyWorkspace);
+    this.setState({
+      editorValue: code
+    })
   }
 
   onClickRun = () => {
@@ -123,7 +150,6 @@ export default class CodeEditor extends React.PureComponent<
       <div onKeyDown={this.onKeyDown} className="CodeEditor" id="CodeEditor">
         <div className="CodeEditor-Header">
           <button onClick={this.onClickRun}>Run</button>
-          <span>{this.state.runningCode ? "Running" : "Done"}</span>
           <button onClick={this.switchEditor}>Switch</button>
         </div>
         <div className="CodeEditor-Editor">
@@ -157,6 +183,8 @@ export default class CodeEditor extends React.PureComponent<
             id="blocklyDiv"
           ></div>
         </div>
+        <BlocklyToolbox />
+        <BlocklyWorkspace />
       </div>
     );
   }

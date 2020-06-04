@@ -6,9 +6,9 @@ import "./CodeEditor.scss";
 import { noa } from "../noa/noaSetup";
 import ReactResizeDetector from "react-resize-detector";
 import { runUserCode } from "../noa/worldGen";
+import * as Blockly from "blockly";
 
-const DEFAULT_CODE = 
-`var a = 64;
+const DEFAULT_CODE = `var a = 64;
 var b = 20;
 var c = 64;
 var r = 20;
@@ -32,6 +32,7 @@ export interface CodeEditorState {
   editorHeight: number;
   editorValue: string;
   runningCode: boolean;
+  editorType: "javascript" | "blockly";
 }
 
 interface JSInterpreter {}
@@ -40,6 +41,8 @@ export default class CodeEditor extends React.PureComponent<
   CodeEditorProps,
   CodeEditorState
 > {
+  blocklyWorkspace: Blockly.WorkspaceSvg | undefined;
+
   constructor(props: CodeEditorProps) {
     super(props);
 
@@ -47,31 +50,40 @@ export default class CodeEditor extends React.PureComponent<
       editorHeight: 500,
       editorWidth: 500,
       editorValue: DEFAULT_CODE,
-      runningCode: false
+      runningCode: false,
+      editorType: "javascript",
     };
   }
 
   componentDidMount() {
+    let toolbox = document.getElementById("toolbox");
+
+    if (toolbox) {
+      this.blocklyWorkspace = Blockly.inject("blocklyDiv", {
+        toolbox,
+      });
+    }
+
     this.onClickRun();
   }
 
   onClickRun = () => {
     this.setState({
-      runningCode: true
+      runningCode: true,
     });
     runUserCode(this.state.editorValue, this.onCodeRunningDone);
   };
 
   onCodeRunningDone = () => {
     this.setState({
-      runningCode: false
+      runningCode: false,
     });
-  }
+  };
 
   onEditorChange = (newValue: string, event: any) => {
     this.setState({
-      editorValue: newValue
-    })
+      editorValue: newValue,
+    });
   };
 
   onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -81,7 +93,28 @@ export default class CodeEditor extends React.PureComponent<
   onResize = (width: number, height: number) => {
     this.setState({
       editorWidth: width,
-      editorHeight: height
+      editorHeight: height,
+    });
+
+    if (this.blocklyWorkspace) {
+      Blockly.svgResize(this.blocklyWorkspace);
+    }
+  };
+
+  /**
+   * Switch between javascript and blockly editors
+   */
+  switchEditor = () => {
+    this.setState({
+      editorType:
+        this.state.editorType === "javascript" ? "blockly" : "javascript",
+    }, () => {
+      // Upon switching states, you need to resize the div to show properly
+      if (this.state.editorType == "blockly") {
+        if (this.blocklyWorkspace) {
+          Blockly.svgResize(this.blocklyWorkspace);
+        }
+      }
     });
   };
 
@@ -91,9 +124,16 @@ export default class CodeEditor extends React.PureComponent<
         <div className="CodeEditor-Header">
           <button onClick={this.onClickRun}>Run</button>
           <span>{this.state.runningCode ? "Running" : "Done"}</span>
+          <button onClick={this.switchEditor}>Switch</button>
         </div>
         <div className="CodeEditor-Editor">
-          <ReactResizeDetector refreshMode="debounce" refreshRate={100} handleWidth handleHeight onResize={this.onResize} />
+          <ReactResizeDetector
+            refreshMode="debounce"
+            refreshRate={100}
+            handleWidth
+            handleHeight
+            onResize={this.onResize}
+          />
           <AceEditor
             mode="javascript"
             theme="monokai"
@@ -104,7 +144,18 @@ export default class CodeEditor extends React.PureComponent<
             setOptions={{ useWorker: false }}
             width={this.state.editorWidth + "px"}
             height={this.state.editorHeight + "px"}
+            style={{
+              display: this.state.editorType === "javascript" ? "block" : "none"
+            }}
           />
+          <div
+            style={{
+              width: this.state.editorWidth,
+              height: this.state.editorHeight,
+              display: this.state.editorType === "blockly" ? "block" : "none"
+            }}
+            id="blocklyDiv"
+          ></div>
         </div>
       </div>
     );

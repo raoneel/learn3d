@@ -324,6 +324,9 @@ const TOOLBOX =
   <category name="Functions" colour="#995ba5" custom="PROCEDURE"></category>
   <category name="Blocks">
     <block type="set_block"></block>
+    <block type="setcolor">
+      <field name="color">#ff0000</field>
+    </block>
   </category>
 </xml>
 `

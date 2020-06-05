@@ -8,25 +8,11 @@ import ReactResizeDetector from "react-resize-detector";
 import { runUserCode } from "../noa/worldGen";
 import * as Blockly from "blockly";
 import { BlocklyToolbox } from "../components/BlocklyToolbox";
-import "../blockly/customBlocks";
+import "../blockly/setBlock";
+import "../blockly/setColor";
 import { BlocklyWorkspace } from "../components/BlocklyWorkspace";
 
-const DEFAULT_CODE = `var a = 64;
-var b = 20;
-var c = 64;
-var r = 20;
-
-for (var i = a-r ; i < a + r; i++) {
-  for (var j = b - r; j < b + r; j++) {
-    for (var k = c - r; k < c + r; k++) {
-        var color = (i + k) % 2 + 1;
-        if (Math.pow((i - a), 2) + Math.pow((j - b), 2) + Math.pow((k - c), 2) < r * r) {
-            setBlock(color, i, j, k);
-        }
-    }
-  }
-}
-`;
+const DEFAULT_CODE = "";
 
 export interface CodeEditorProps {}
 
@@ -55,13 +41,12 @@ export default class CodeEditor extends React.PureComponent<
       editorWidth: 500,
       editorValue: DEFAULT_CODE,
       runningCode: false,
-      editorType: "javascript",
+      editorType: "blockly",
     };
   }
 
   componentDidMount() {
     this.initializeBlockly();
-    this.onClickRun();
   }
 
   onAceEditorLoad = (editor: any) => {
@@ -97,6 +82,7 @@ export default class CodeEditor extends React.PureComponent<
     this.setState({
       editorValue: code
     })
+    this.onClickRun();
   }
 
   onClickRun = () => {

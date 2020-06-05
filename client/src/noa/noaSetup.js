@@ -11,6 +11,7 @@
 import Engine from "noa-engine";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import {chunkMap} from "./worldGen";
+import { setupBlocks, GRASS_ID } from "./noaBlockSetup";
 export let noa;
 
 export const DIM = 128;
@@ -39,16 +40,7 @@ export function initNoa() {
    *
    */
 
-  // block materials (just colors for this demo)
-  var textureURL = null; // replace that with a filename to specify textures
-  var brownish = [0.45, 0.36, 0.22];
-  var greenish = [0.1, 0.8, 0.2];
-  noa.registry.registerMaterial("dirt", brownish, textureURL);
-  noa.registry.registerMaterial("grass", greenish, textureURL);
-
-  // block types and their material names
-  var dirtID = noa.registry.registerBlock(1, { material: "dirt" });
-  var grassID = noa.registry.registerBlock(2, { material: "grass" });
+  setupBlocks(noa);
 
   /*
    *
@@ -76,7 +68,7 @@ export function initNoa() {
     }
 
     if (y === -1) {
-      return grassID;
+      return GRASS_ID;
     }
 
     return 0;
@@ -150,7 +142,7 @@ export function initNoa() {
 
   // place some grass on right click
   noa.inputs.down.on("alt-fire", function () {
-    if (noa.targetedBlock) noa.addBlock(grassID, noa.targetedBlock.adjacent);
+    if (noa.targetedBlock) noa.addBlock(GRASS_ID, noa.targetedBlock.adjacent);
   });
 
   // add a key binding for "E" to do the same as alt-fire

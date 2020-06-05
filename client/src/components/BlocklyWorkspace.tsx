@@ -9,7 +9,7 @@ const WORKSPACE =
   <variables>
     <variable id="Mo?yj:I=b7:TXe,rjH,1">i</variable>
   </variables>
-  <block type="controls_for" id="1(NRpHNLP=wfmjYDWL^:" x="113" y="62">
+  <block type="controls_for" id="1(NRpHNLP=wfmjYDWL^:" x="62" y="62">
     <field name="VAR" id="Mo?yj:I=b7:TXe,rjH,1">i</field>
     <value name="FROM">
       <shadow type="math_number" id="%W3].8!BBZ+E/H4M5ci/">
@@ -27,27 +27,48 @@ const WORKSPACE =
       </shadow>
     </value>
     <statement name="DO">
-      <block type="set_block" id="~9J{q|%op_1?,3Xz)ExH">
-        <value name="type">
-          <block type="math_number" id="D^4fv+xnLny~1~3iRyo:">
-            <field name="NUM">1</field>
+      <block type="controls_if" id="~!hAA{ais%=hMwds3FG?">
+        <mutation else="1"></mutation>
+        <value name="IF0">
+          <block type="math_number_property" id="XOH(n0mYKb0gw-I!./4]">
+            <mutation divisor_input="false"></mutation>
+            <field name="PROPERTY">EVEN</field>
+            <value name="NUMBER_TO_CHECK">
+              <block type="variables_get" id="ImM-zMfBa4B8QN/uOUr4">
+                <field name="VAR" id="Mo?yj:I=b7:TXe,rjH,1">i</field>
+              </block>
+            </value>
           </block>
         </value>
-        <value name="x">
-          <block type="math_number" id="/Vvgt;{h5(qmh2,\`Q0dR">
-            <field name="NUM">64</field>
+        <statement name="DO0">
+          <block type="setcolor" id="0sP\`83/Xb(4Eu/#|$tV.">
+            <field name="color">#ffffff</field>
           </block>
-        </value>
-        <value name="y">
-          <block type="variables_get" id="KR8;nySRHtL2L6Fal@0Q">
-            <field name="VAR" id="Mo?yj:I=b7:TXe,rjH,1">i</field>
+        </statement>
+        <statement name="ELSE">
+          <block type="setcolor" id="~T(LnbRXlY!C6|r?kS?I">
+            <field name="color">#000000</field>
           </block>
-        </value>
-        <value name="z">
-          <block type="math_number" id="aL)5~QhlotY~Q/D)Mw1*">
-            <field name="NUM">64</field>
+        </statement>
+        <next>
+          <block type="set_block" id="~9J{q|%op_1?,3Xz)ExH">
+            <value name="x">
+              <block type="math_number" id="/Vvgt;{h5(qmh2,\`Q0dR">
+                <field name="NUM">64</field>
+              </block>
+            </value>
+            <value name="y">
+              <block type="variables_get" id="KR8;nySRHtL2L6Fal@0Q">
+                <field name="VAR" id="Mo?yj:I=b7:TXe,rjH,1">i</field>
+              </block>
+            </value>
+            <value name="z">
+              <block type="math_number" id="aL)5~QhlotY~Q/D)Mw1*">
+                <field name="NUM">64</field>
+              </block>
+            </value>
           </block>
-        </value>
+        </next>
       </block>
     </statement>
   </block>

@@ -3,10 +3,7 @@ import * as Blockly from "blockly";
 Blockly.Blocks['set_block'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Set Block");
-    this.appendValueInput("type")
-        .setCheck("Number")
-        .appendField("type");
+        .appendField("Create Block");
     this.appendValueInput("x")
         .setCheck("Number")
         .appendField("x");
@@ -25,11 +22,10 @@ Blockly.Blocks['set_block'] = {
 };
 
 Blockly.JavaScript['set_block'] = function(block) {
-  var value_type = Blockly.JavaScript.valueToCode(block, 'type', Blockly.JavaScript.ORDER_ATOMIC);
   var value_x = Blockly.JavaScript.valueToCode(block, 'x', Blockly.JavaScript.ORDER_ATOMIC);
   var value_y = Blockly.JavaScript.valueToCode(block, 'y', Blockly.JavaScript.ORDER_ATOMIC);
   var value_z = Blockly.JavaScript.valueToCode(block, 'z', Blockly.JavaScript.ORDER_ATOMIC);
 
-  var code = `setBlock(${value_type}, ${value_x}, ${value_y}, ${value_z});\n`;
+  var code = `setBlock(${value_x}, ${value_y}, ${value_z});\n`;
   return code;
 };

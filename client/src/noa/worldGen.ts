@@ -1,9 +1,11 @@
 import { noa, DIM, CHUNK_SIZE } from "./noaSetup";
+import { getNoaBlockId } from "./noaBlockSetup";
 
 export let chunkMap = new Map<string, any>();
+let currentColorId = 0;
 
 function initFunc(interpreter: any, globalObject: any) {
-  function wrapper(id: number, x: number, y: number, z: number) {
+  function setBlockWrapper(x: number, y: number, z: number) {
     if (noa) {
       // Calculate chunkID based on x,y,z
       let chunkX = worldCoordToChunkCoord(x);
@@ -27,14 +29,24 @@ function initFunc(interpreter: any, globalObject: any) {
       }
 
       // Get/set blockID on local ndarray
-      chunkData.set(innerChunkX, innerChunkY, innerChunkZ, id);
+      chunkData.set(innerChunkX, innerChunkY, innerChunkZ, currentColorId);
     }
+  }
+
+  function setColorWrapper(hexColor: string) {
+    currentColorId = getNoaBlockId(hexColor);
   }
 
   interpreter.setProperty(
     globalObject,
     "setBlock",
-    interpreter.createNativeFunction(wrapper)
+    interpreter.createNativeFunction(setBlockWrapper)
+  );
+
+  interpreter.setProperty(
+    globalObject,
+    "setColor",
+    interpreter.createNativeFunction(setColorWrapper)
   );
 }
 

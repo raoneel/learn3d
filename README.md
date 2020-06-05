@@ -9,3 +9,5 @@ Demo at https://learn3d-c7053.web.app/
 `cd client/`
 
 `yarn start`
+
+[![Build Status](https://travis-ci.org/raoneel/learn3d.svg?branch=master)](https://travis-ci.org/raoneel/learn3d)

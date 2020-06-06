@@ -22,9 +22,11 @@ Blockly.Blocks['set_block'] = {
 };
 
 Blockly.JavaScript['set_block'] = function(block) {
-  var value_x = Blockly.JavaScript.valueToCode(block, 'x', Blockly.JavaScript.ORDER_ATOMIC);
-  var value_y = Blockly.JavaScript.valueToCode(block, 'y', Blockly.JavaScript.ORDER_ATOMIC);
-  var value_z = Blockly.JavaScript.valueToCode(block, 'z', Blockly.JavaScript.ORDER_ATOMIC);
+  // Default value of -1 which will draw the block out of bounds
+  // When the block is being dragged, it will change all fields to default value
+  var value_x = Blockly.JavaScript.valueToCode(block, 'x', Blockly.JavaScript.ORDER_ATOMIC) || -1;
+  var value_y = Blockly.JavaScript.valueToCode(block, 'y', Blockly.JavaScript.ORDER_ATOMIC) || -1;
+  var value_z = Blockly.JavaScript.valueToCode(block, 'z', Blockly.JavaScript.ORDER_ATOMIC) || -1;
 
   var code = `setBlock(${value_x}, ${value_y}, ${value_z});\n`;
   return code;

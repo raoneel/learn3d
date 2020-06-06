@@ -112,6 +112,9 @@ export function initNoa() {
   var w = dat.width;
   var h = dat.height;
 
+  // Set the players initial position
+  noa.entities.setPosition(player, [64, 5 , 10]);
+
   // add a mesh to represent the player, and scale it, etc.
   var scene = noa.rendering.getScene();
   var mesh = Mesh.CreateBox("player-mesh", 1, scene);

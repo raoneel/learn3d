@@ -10,6 +10,7 @@ import * as Blockly from "blockly";
 import { BlocklyToolbox } from "../components/BlocklyToolbox";
 import "../blockly/setBlock";
 import "../blockly/setColor";
+import "../blockly/setRandomColor";
 import { BlocklyWorkspace } from "../components/BlocklyWorkspace";
 
 const DEFAULT_CODE = "";

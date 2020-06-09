@@ -327,6 +327,7 @@ const TOOLBOX =
     <block type="setcolor">
       <field name="color">#ff0000</field>
     </block>
+    <block type="set_random_color"></block>
   </category>
 </xml>
 `

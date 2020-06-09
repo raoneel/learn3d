@@ -1,5 +1,5 @@
 import { noa, DIM, CHUNK_SIZE } from "./noaSetup";
-import { getNoaBlockId } from "./noaBlockSetup";
+import { getNoaBlockId, getRandomColorId } from "./noaBlockSetup";
 
 export let chunkMap = new Map<string, any>();
 let currentColorId = 0;
@@ -36,6 +36,16 @@ function initFunc(interpreter: any, globalObject: any) {
   function setColorWrapper(hexColor: string) {
     currentColorId = getNoaBlockId(hexColor);
   }
+
+  function setRandomColorWrapper() {
+    currentColorId = getRandomColorId();
+  }
+
+  interpreter.setProperty(
+    globalObject,
+    "setRandomColor",
+    interpreter.createNativeFunction(setRandomColorWrapper)
+  );
 
   interpreter.setProperty(
     globalObject,

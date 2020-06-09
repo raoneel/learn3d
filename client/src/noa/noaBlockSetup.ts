@@ -48,3 +48,10 @@ export function getNoaBlockId(hexColor: string) {
   // TODO round to nearest color if another color is given that doesn't exist
   return COLOURS.indexOf(hexColor) + 1;
 }
+
+/**
+ * Return a random color index.
+ */
+export function getRandomColorId() {
+  return Math.floor(Math.random() * COLOURS.length);
+}

@@ -3,6 +3,7 @@ import { getNoaBlockId, getRandomColorId } from "./noaBlockSetup";
 
 export let chunkMap = new Map<string, any>();
 let currentColorId = 0;
+let currentTaskId = 0;
 
 function initFunc(interpreter: any, globalObject: any) {
   function setBlockWrapper(x: number, y: number, z: number) {
@@ -71,6 +72,10 @@ export function runUserCode(userCode: string, onDone: () => void) {
     chunkMap.clear();
     //@ts-ignore
     var myInterpreter = new Interpreter(userCode, initFunc);
+
+    // Task ID is used to cancel older tasks
+    currentTaskId = Math.random();
+    myInterpreter.taskId = currentTaskId;
     stepUntilDone(myInterpreter, onDone);
   } catch (e) {
     console.error(e);
@@ -84,6 +89,12 @@ function stepUntilDone(interpreter: any, onDone: () => void) {
     interpreter.step();
     steps++;
 
+    // If another task is started, cancel this task
+    // TODO is there a race condition where the chunkMap isn't cleared properly?
+    if (interpreter.taskId !== currentTaskId) {
+      return;
+    }
+
     // 70000 steps is just a guess for achieving ~45 FPS
     // TODO improve performance
     if (steps > 70000) {
@@ -94,8 +105,6 @@ function stepUntilDone(interpreter: any, onDone: () => void) {
     }
 
   }
-
-  // console.log("Steps completed:", steps);
 
   // Invalidate chunks once the data is set
   noa.world.invalidateVoxelsInAABB({

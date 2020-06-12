@@ -16,7 +16,7 @@ export default class Home extends React.PureComponent<HomeProps, HomeState> {
   }
   public render() {
     return (
-      <SplitterLayout primaryIndex={0} primaryMinSize={60} percentage>
+      <SplitterLayout primaryIndex={0} secondaryInitialSize={40} percentage>
         <NoaContainer />
         <CodeEditor />
       </SplitterLayout>

@@ -36,7 +36,7 @@ const TOOLBOX =
       <field name="VAR" id="nn)/6E_n;PtoNg3f+QI}">i</field>
       <value name="FROM">
         <shadow type="math_number">
-          <field name="NUM">1</field>
+          <field name="NUM">0</field>
         </shadow>
       </value>
       <value name="TO">

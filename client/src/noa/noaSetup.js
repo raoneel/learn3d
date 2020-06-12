@@ -14,7 +14,7 @@ import {chunkMap} from "./worldGen";
 import { setupBlocks, GRASS_ID } from "./noaBlockSetup";
 export let noa;
 
-export const DIM = 128;
+export const DIM = 100;
 export const CHUNK_SIZE = 32;
 
 export function initNoa() {
@@ -113,7 +113,7 @@ export function initNoa() {
   var h = dat.height;
 
   // Set the players initial position
-  noa.entities.setPosition(player, [64, 5 , 10]);
+  noa.entities.setPosition(player, [50, 5 , 10]);
 
   // add a mesh to represent the player, and scale it, etc.
   var scene = noa.rendering.getScene();

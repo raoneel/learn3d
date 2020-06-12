@@ -54,7 +54,7 @@ const WORKSPACE =
           <block type="set_block" id="~9J{q|%op_1?,3Xz)ExH">
             <value name="x">
               <block type="math_number" id="/Vvgt;{h5(qmh2,\`Q0dR">
-                <field name="NUM">64</field>
+                <field name="NUM">50</field>
               </block>
             </value>
             <value name="y">
@@ -64,7 +64,7 @@ const WORKSPACE =
             </value>
             <value name="z">
               <block type="math_number" id="aL)5~QhlotY~Q/D)Mw1*">
-                <field name="NUM">64</field>
+                <field name="NUM">50</field>
               </block>
             </value>
           </block>

@@ -8,6 +8,18 @@ let currentTaskId = 0;
 function initFunc(interpreter: any, globalObject: any) {
   function setBlockWrapper(x: number, y: number, z: number) {
     if (noa) {
+      // Ignore if block is set out of bounds
+      if (
+        x < 0 ||
+        y < 0 ||
+        z < 0 ||
+        x > DIM - 1 ||
+        y > DIM - 1 ||
+        z > DIM - 1
+      ) {
+        return;
+      }
+
       // Calculate chunkID based on x,y,z
       let chunkX = worldCoordToChunkCoord(x);
       let chunkY = worldCoordToChunkCoord(y);
@@ -100,10 +112,9 @@ function stepUntilDone(interpreter: any, onDone: () => void) {
     if (steps > 70000) {
       requestAnimationFrame(() => {
         stepUntilDone(interpreter, onDone);
-      })
+      });
       return;
     }
-
   }
 
   // Invalidate chunks once the data is set

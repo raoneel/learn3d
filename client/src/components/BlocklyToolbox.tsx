@@ -328,6 +328,9 @@ const TOOLBOX =
       <field name="color">#ff0000</field>
     </block>
     <block type="set_random_color"></block>
+    <block type="set_sky_color">
+      <field name="color">#ff0000</field>
+    </block>
   </category>
 </xml>
 `

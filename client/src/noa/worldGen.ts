@@ -58,7 +58,7 @@ function initFunc(interpreter: any, globalObject: any) {
     
     // Set sky (clearColor)
     if (noa) {
-      noa.rendering._scene.clearColor = new Color3(parsedRGB.r, parsedRGB.g, parsedRGB.b);
+      noa.rendering._scene.clearColor = new Color3(parsedRGB.r / 255.0, parsedRGB.g / 255.0, parsedRGB.b / 255.0);
     }
   }
 

@@ -8,11 +8,9 @@ import ReactResizeDetector from "react-resize-detector";
 import { runUserCode } from "../noa/worldGen";
 import * as Blockly from "blockly";
 import { BlocklyToolbox } from "../components/BlocklyToolbox";
-import "../blockly/setBlock";
-import "../blockly/setColor";
-import "../blockly/setRandomColor";
 import { BlocklyWorkspace } from "../components/BlocklyWorkspace";
 import { hashCode } from "../util/utils";
+import "../blockly/customBlocks";
 
 const DEFAULT_CODE = "";
 

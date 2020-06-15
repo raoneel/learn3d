@@ -11,6 +11,7 @@ import { BlocklyToolbox } from "../components/BlocklyToolbox";
 import { BlocklyWorkspace } from "../components/BlocklyWorkspace";
 import { hashCode } from "../util/utils";
 import "../blockly/customBlocks";
+import Console from "../components/Console";
 
 const DEFAULT_CODE = "";
 
@@ -193,6 +194,7 @@ export default class CodeEditor extends React.PureComponent<
             id="blocklyDiv"
           ></div>
         </div>
+        <Console />
         <BlocklyToolbox />
         <BlocklyWorkspace />
       </div>

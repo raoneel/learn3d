@@ -12,6 +12,8 @@ import Engine from "noa-engine";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import {chunkMap} from "./worldGen";
 import { setupBlocks, GRASS_ID } from "./noaBlockSetup";
+import { store } from "../redux/store";
+import { addConsoleMessage } from "../redux/actions/consoleActions";
 export let noa;
 
 export const DIM = 100;
@@ -140,12 +142,24 @@ export function initNoa() {
 
   // clear targeted block on on left click
   noa.inputs.down.on("fire", function () {
-    if (noa.targetedBlock) noa.setBlock(0, noa.targetedBlock.position);
+    if (noa.targetedBlock) {
+      noa.setBlock(0, noa.targetedBlock.position);
+      let [x,y,z] = noa.targetedBlock.position;
+
+      // Add block location to console
+      store.dispatch(addConsoleMessage(`Removed block at x:${x} y:${y} z:${z}`));
+    }
   });
 
   // place some grass on right click
   noa.inputs.down.on("alt-fire", function () {
-    if (noa.targetedBlock) noa.addBlock(GRASS_ID, noa.targetedBlock.adjacent);
+    if (noa.targetedBlock) {
+      noa.addBlock(GRASS_ID, noa.targetedBlock.adjacent);
+      let [x,y,z] = noa.targetedBlock.adjacent;
+
+      // Add block location to console
+      store.dispatch(addConsoleMessage(`Placed block at x:${x} y:${y} z:${z}`));
+    } 
   });
 
   // add a key binding for "E" to do the same as alt-fire

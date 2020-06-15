@@ -1,5 +1,7 @@
 import { noa, DIM, CHUNK_SIZE } from "./noaSetup";
 import { getNoaBlockId, getRandomColorId } from "./noaBlockSetup";
+import { Color3 } from "@babylonjs/core/Maths/math.color";
+import { hexToRgb } from "../util/utils";
 
 export let chunkMap = new Map<string, any>();
 let currentColorId = 0;
@@ -46,6 +48,20 @@ function initFunc(interpreter: any, globalObject: any) {
     }
   }
 
+  function setSkyColorWrapper(hexColor: string) {
+    // Split hex color into r,g,b values
+    let parsedRGB = hexToRgb(hexColor);
+
+    if (!parsedRGB) {
+      return;
+    }
+    
+    // Set sky (clearColor)
+    if (noa) {
+      noa.rendering._scene.clearColor = new Color3(parsedRGB.r, parsedRGB.g, parsedRGB.b);
+    }
+  }
+
   function setColorWrapper(hexColor: string) {
     currentColorId = getNoaBlockId(hexColor);
   }
@@ -53,6 +69,12 @@ function initFunc(interpreter: any, globalObject: any) {
   function setRandomColorWrapper() {
     currentColorId = getRandomColorId();
   }
+
+  interpreter.setProperty(
+    globalObject,
+    "setSkyColor",
+    interpreter.createNativeFunction(setSkyColorWrapper)
+  );
 
   interpreter.setProperty(
     globalObject,

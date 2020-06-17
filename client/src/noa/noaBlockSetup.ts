@@ -51,7 +51,8 @@ export function getNoaBlockId(hexColor: string) {
 
 /**
  * Return a random color index.
+ * Does not include the air color index (0)
  */
 export function getRandomColorId() {
-  return Math.floor(Math.random() * COLOURS.length);
+  return Math.floor(Math.random() * COLOURS.length) + 1;
 }

@@ -29,6 +29,8 @@ export class Console extends React.PureComponent<
           <div className="Console-Error">{message.message}</div>
         )
       }
+
+      return null;
     })
   }
 

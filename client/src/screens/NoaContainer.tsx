@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { initNoa } from '../noa/noaSetup';
 import ReactResizeDetector from 'react-resize-detector';
 import "./NoaContainer.scss";

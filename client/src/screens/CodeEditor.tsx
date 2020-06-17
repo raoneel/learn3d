@@ -3,7 +3,6 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-monokai";
 import "./CodeEditor.scss";
-import { noa } from "../noa/noaSetup";
 import ReactResizeDetector from "react-resize-detector";
 import { runUserCode } from "../noa/worldGen";
 import * as Blockly from "blockly";
@@ -146,7 +145,7 @@ export default class CodeEditor extends React.PureComponent<
       },
       () => {
         // Upon switching states, you need to resize the div to show properly
-        if (this.state.editorType == "blockly") {
+        if (this.state.editorType === "blockly") {
           if (this.blocklyWorkspace) {
             Blockly.svgResize(this.blocklyWorkspace);
           }

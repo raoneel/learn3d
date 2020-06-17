@@ -190,5 +190,14 @@ export function initNoa() {
       if (noa.camera.zoomDistance < 0) noa.camera.zoomDistance = 0;
       if (noa.camera.zoomDistance > 10) noa.camera.zoomDistance = 10;
     }
+
+    // If you fall off the map, reset position and velocity
+    if (dat.position[1] < -10) {
+      noa.entities.setPosition(player, [50, 5, -5]);
+      let body = noa.entities.getPhysicsBody(player);
+      body.velocity[0] = 0;
+      body.velocity[1] = 1;
+      body.velocity[2] = 2;
+    }
   });
 }

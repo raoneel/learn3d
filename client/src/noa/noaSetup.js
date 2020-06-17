@@ -10,14 +10,18 @@
 // Engine options object, and engine instantiation:
 import Engine from "noa-engine";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
-import {chunkMap} from "./worldGen";
-import { setupBlocks, GRASS_ID } from "./noaBlockSetup";
+import { chunkMap } from "./worldGen";
+import { setupBlocks, GRASS_ID, DARK_GRASS_ID } from "./noaBlockSetup";
 import { store } from "../redux/store";
 import { addConsoleMessage } from "../redux/actions/consoleActions";
 export let noa;
 
 export const DIM = 100;
 export const CHUNK_SIZE = 32;
+
+const PLATFORM_X_START = 46;
+const PLATFORM_X_END = 53;
+const PLATFORM_Z_END = -12;
 
 export function initNoa() {
   var opts = {
@@ -57,6 +61,17 @@ export function initNoa() {
    */
 
   function getVoxelID(x, y, z) {
+    // Starting platform
+    if (
+      x >= PLATFORM_X_START &&
+      x <= PLATFORM_X_END &&
+      z < 0 &&
+      z >= PLATFORM_Z_END &&
+      y === -1
+    ) {
+      return DARK_GRASS_ID;
+    }
+
     if (x >= DIM || x < 0) {
       return 0;
     }
@@ -115,7 +130,7 @@ export function initNoa() {
   var h = dat.height;
 
   // Set the players initial position
-  noa.entities.setPosition(player, [50, 5 , 10]);
+  noa.entities.setPosition(player, [50, 5, -5]);
 
   // add a mesh to represent the player, and scale it, etc.
   var scene = noa.rendering.getScene();
@@ -144,10 +159,12 @@ export function initNoa() {
   noa.inputs.down.on("fire", function () {
     if (noa.targetedBlock) {
       noa.setBlock(0, noa.targetedBlock.position);
-      let [x,y,z] = noa.targetedBlock.position;
+      let [x, y, z] = noa.targetedBlock.position;
 
       // Add block location to console
-      store.dispatch(addConsoleMessage(`Removed block at x:${x} y:${y} z:${z}`));
+      store.dispatch(
+        addConsoleMessage(`Removed block at x:${x} y:${y} z:${z}`)
+      );
     }
   });
 
@@ -155,11 +172,11 @@ export function initNoa() {
   noa.inputs.down.on("alt-fire", function () {
     if (noa.targetedBlock) {
       noa.addBlock(GRASS_ID, noa.targetedBlock.adjacent);
-      let [x,y,z] = noa.targetedBlock.adjacent;
+      let [x, y, z] = noa.targetedBlock.adjacent;
 
       // Add block location to console
       store.dispatch(addConsoleMessage(`Placed block at x:${x} y:${y} z:${z}`));
-    } 
+    }
   });
 
   // add a key binding for "E" to do the same as alt-fire

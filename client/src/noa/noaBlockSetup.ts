@@ -1,4 +1,5 @@
 export const GRASS_ID = 39;
+export const DARK_GRASS_ID = 40;
 
 const COLOURS = [
   // grays

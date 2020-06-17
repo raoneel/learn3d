@@ -12,8 +12,12 @@ import { BlocklyWorkspace } from "../components/BlocklyWorkspace";
 import { hashCode } from "../util/utils";
 import "../blockly/customBlocks";
 import Console from "../components/Console";
+var debounce = require('lodash.debounce');
 
 const DEFAULT_CODE = "";
+
+// Prevent code from being run too often
+const debounceRunUserCode = debounce(runUserCode, 500);
 
 export interface CodeEditorProps {}
 
@@ -99,7 +103,7 @@ export default class CodeEditor extends React.PureComponent<
     this.setState({
       runningCode: true,
     });
-    runUserCode(this.state.editorValue, this.onCodeRunningDone);
+    debounceRunUserCode(this.state.editorValue, this.onCodeRunningDone);
   };
 
   onCodeRunningDone = () => {
@@ -112,6 +116,8 @@ export default class CodeEditor extends React.PureComponent<
     this.setState({
       editorValue: newValue,
     });
+
+    this.onClickRun();
   };
 
   onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {

@@ -11,7 +11,8 @@ import { BlocklyWorkspace } from "../components/BlocklyWorkspace";
 import { hashCode } from "../util/utils";
 import "../blockly/customBlocks";
 import Console from "../components/Console";
-var debounce = require('lodash.debounce');
+import { Button, Form, FormGroup, Label, Input } from "reactstrap";
+var debounce = require("lodash.debounce");
 
 const DEFAULT_CODE = "";
 
@@ -163,8 +164,27 @@ export default class CodeEditor extends React.PureComponent<
     return (
       <div onKeyDown={this.onKeyDown} className="CodeEditor" id="CodeEditor">
         <div className="CodeEditor-Header">
-          <button onClick={this.onClickRun}>Run</button>
-          <button onClick={this.switchEditor}>Switch</button>
+          <Button
+            className="CodeEditor-Header-Button"
+            color="success"
+            onClick={this.onClickRun}
+          >
+            Run
+          </Button>
+          <Button
+            className="CodeEditor-Header-Button"
+            color="info"
+            onClick={this.switchEditor}
+          >
+            Switch View
+          </Button>
+          <Form>
+            <FormGroup check inline>
+              <Label check>
+                <Input type="checkbox" checked /> <span className="CodeEditor-Header-Text">Auto-run</span>
+              </Label>
+            </FormGroup>
+          </Form>
         </div>
         <div className="CodeEditor-Editor">
           <ReactResizeDetector

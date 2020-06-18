@@ -8,3 +8,21 @@
 .CodeEditor-Editor {
   flex: 1 1 auto;
 }
+
+.CodeEditor-Header {
+  padding: 4px;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.CodeEditor-Header-Button {
+  margin-right: 4px;
+}
+
+.CodeEditor-Header-Text {
+  color: white;
+}

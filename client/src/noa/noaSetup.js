@@ -61,37 +61,6 @@ export function initNoa() {
    *
    */
 
-  function getVoxelID(x, y, z) {
-    // Starting platform
-    if (
-      x >= PLATFORM_X_START &&
-      x <= PLATFORM_X_END &&
-      z < 0 &&
-      z >= PLATFORM_Z_END &&
-      y === -1
-    ) {
-      return DARK_GRASS_ID;
-    }
-
-    if (x >= DIM || x < 0) {
-      return 0;
-    }
-
-    if (z >= DIM || z < 0) {
-      return 0;
-    }
-
-    if (y < -1) {
-      return 0;
-    }
-
-    if (y === -1) {
-      return GRASS_ID;
-    }
-
-    return 0;
-  }
-
   // register for world events
   noa.world.on("worldDataNeeded", function (id, data, x, y, z) {
     // If chunk ID exists, then return from cache, otherwise run loop
@@ -109,7 +78,7 @@ export function initNoa() {
     for (var i = 0; i < data.shape[0]; i++) {
       for (var j = 0; j < data.shape[1]; j++) {
         for (var k = 0; k < data.shape[2]; k++) {
-          var voxelID = getVoxelID(x + i, y + j, z + k);
+          var voxelID = getDefaultVoxelID(x + i, y + j, z + k);
           data.set(i, j, k, voxelID);
         }
       }
@@ -159,8 +128,14 @@ export function initNoa() {
   // clear targeted block on on left click
   noa.inputs.down.on("fire", function () {
     if (noa.targetedBlock) {
-      noa.setBlock(0, noa.targetedBlock.position);
       let [x, y, z] = noa.targetedBlock.position;
+
+      // Can't remove default cubes in world
+      if (getDefaultVoxelID(x, y, z) !== 0) {
+        return;
+      }
+
+      noa.setBlock(0, noa.targetedBlock.position);
 
       // Add block location to console
       store.dispatch(
@@ -201,4 +176,35 @@ export function initNoa() {
       body.velocity[2] = 2;
     }
   });
+}
+
+export function getDefaultVoxelID(x, y, z) {
+  // Starting platform
+  if (
+    x >= PLATFORM_X_START &&
+    x <= PLATFORM_X_END &&
+    z < 0 &&
+    z >= PLATFORM_Z_END &&
+    y === -1
+  ) {
+    return DARK_GRASS_ID;
+  }
+
+  if (x >= DIM || x < 0) {
+    return 0;
+  }
+
+  if (z >= DIM || z < 0) {
+    return 0;
+  }
+
+  if (y < -1) {
+    return 0;
+  }
+
+  if (y === -1) {
+    return GRASS_ID;
+  }
+
+  return 0;
 }

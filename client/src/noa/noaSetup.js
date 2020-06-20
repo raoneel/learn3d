@@ -31,6 +31,7 @@ export function initNoa() {
     chunkAddDistance: 6.5,
     chunkRemoveDistance: 7.5,
     domElement: document.getElementById("NoaContainer"),
+    playerAutoStep: true
     // See `test` example, or noa docs/source, for more options
   };
 

@@ -5,3 +5,7 @@
 .Console-ScrollableFeed {
   padding: 8px;
 }
+
+.Console-MessageFeed {
+  height: 100%;
+}

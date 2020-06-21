@@ -7,6 +7,13 @@
 
 .CodeEditor-Editor {
   flex: 1 1 auto;
+  overflow: scroll;
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.CodeEditor-Editor::-webkit-scrollbar {
+  display: none;
 }
 
 .CodeEditor-Header {

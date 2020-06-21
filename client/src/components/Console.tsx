@@ -36,7 +36,7 @@ export class Console extends React.PureComponent<
 
   public render() {
     return (
-      <div className="Console-MessageFeed" style={{ height: 100, maxHeight: 100 }}>
+      <div className="Console-MessageFeed">
         <ScrollableFeed className="Console-ScrollableFeed" forceScroll={true}>
           {this.renderMessages()}
         </ScrollableFeed>

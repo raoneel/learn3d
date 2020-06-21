@@ -8,8 +8,8 @@
 .CodeEditor-Editor {
   flex: 1 1 auto;
   overflow: scroll;
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
 }
 
 .CodeEditor-Editor::-webkit-scrollbar {
@@ -28,6 +28,10 @@
 
 .CodeEditor-Header-Button {
   margin-right: 4px;
+}
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+  box-shadow: none !important;
 }
 
 .CodeEditor-Header-Text {

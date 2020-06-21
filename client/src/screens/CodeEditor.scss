@@ -26,3 +26,9 @@
 .CodeEditor-Header-Text {
   color: white;
 }
+
+.CodeEditor-EditorContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}

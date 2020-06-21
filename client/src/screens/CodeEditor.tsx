@@ -12,6 +12,7 @@ import { hashCode } from "../util/utils";
 import "../blockly/customBlocks";
 import Console from "../components/Console";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
+import SplitterLayout from "react-splitter-layout";
 var debounce = require("lodash.debounce");
 
 const DEFAULT_CODE = "";
@@ -163,63 +164,69 @@ export default class CodeEditor extends React.PureComponent<
   public render() {
     return (
       <div onKeyDown={this.onKeyDown} className="CodeEditor" id="CodeEditor">
-        <div className="CodeEditor-Header">
-          <Button
-            className="CodeEditor-Header-Button"
-            color="success"
-            onClick={this.onClickRun}
-          >
-            Run
-          </Button>
-          <Button
-            className="CodeEditor-Header-Button"
-            color="info"
-            onClick={this.switchEditor}
-          >
-            Switch View
-          </Button>
-          <Form>
-            <FormGroup check inline>
-              <Label check>
-                <Input type="checkbox" checked /> <span className="CodeEditor-Header-Text">Auto-run</span>
-              </Label>
-            </FormGroup>
-          </Form>
-        </div>
-        <div className="CodeEditor-Editor">
-          <ReactResizeDetector
-            refreshMode="debounce"
-            refreshRate={100}
-            handleWidth
-            handleHeight
-            onResize={this.onResize}
-          />
-          <AceEditor
-            onLoad={this.onAceEditorLoad}
-            mode="javascript"
-            theme="monokai"
-            name="CodeEditor"
-            onChange={this.onEditorChange}
-            value={this.state.editorValue}
-            editorProps={{ $blockScrolling: false }}
-            setOptions={{ useWorker: false }}
-            width={this.state.editorWidth + "px"}
-            height={this.state.editorHeight + "px"}
-            style={{
-              display:
-                this.state.editorType === "javascript" ? "block" : "none",
-            }}
-          />
-          <div
-            style={{
-              width: this.state.editorWidth,
-              height: this.state.editorHeight,
-              display: this.state.editorType === "blockly" ? "block" : "none",
-            }}
-            id="blocklyDiv"
-          ></div>
-        </div>
-        <Console />
+        <SplitterLayout vertical={true}>
+          <div className="CodeEditor-EditorContainer">
+            <div className="CodeEditor-Header">
+              <Button
+                className="CodeEditor-Header-Button"
+                color="success"
+                onClick={this.onClickRun}
+              >
+                Run
+              </Button>
+              <Button
+                className="CodeEditor-Header-Button"
+                color="info"
+                onClick={this.switchEditor}
+              >
+                Switch View
+              </Button>
+              <Form>
+                <FormGroup check inline>
+                  <Label check>
+                    <Input type="checkbox" checked />{" "}
+                    <span className="CodeEditor-Header-Text">Auto-run</span>
+                  </Label>
+                </FormGroup>
+              </Form>
+            </div>
+            <div className="CodeEditor-Editor">
+              <ReactResizeDetector
+                refreshMode="debounce"
+                refreshRate={100}
+                handleWidth
+                handleHeight
+                onResize={this.onResize}
+              />
+              <AceEditor
+                onLoad={this.onAceEditorLoad}
+                mode="javascript"
+                theme="monokai"
+                name="CodeEditor"
+                onChange={this.onEditorChange}
+                value={this.state.editorValue}
+                editorProps={{ $blockScrolling: false }}
+                setOptions={{ useWorker: false }}
+                width={this.state.editorWidth + "px"}
+                height={this.state.editorHeight + "px"}
+                style={{
+                  display:
+                    this.state.editorType === "javascript" ? "block" : "none",
+                }}
+              />
+              <div
+                style={{
+                  width: this.state.editorWidth,
+                  height: this.state.editorHeight,
+                  display:
+                    this.state.editorType === "blockly" ? "block" : "none",
+                }}
+                id="blocklyDiv"
+              ></div>
+            </div>
+          </div>
+          <Console />
+        </SplitterLayout>
         <BlocklyToolbox />
         <BlocklyWorkspace />
       </div>

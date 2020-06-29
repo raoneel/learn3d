@@ -331,6 +331,7 @@ const TOOLBOX =
     <block type="set_sky_color">
       <field name="color">#ff0000</field>
     </block>
+    <block type="set_transparent"></block>
   </category>
 </xml>
 `

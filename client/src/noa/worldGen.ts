@@ -76,6 +76,10 @@ function initFunc(interpreter: any, globalObject: any) {
     currentColorId = getRandomColorId();
   }
 
+  function setTransparentWrapper() {
+    currentColorId = 0;
+  }
+
   interpreter.setProperty(
     globalObject,
     "setSkyColor",
@@ -104,6 +108,12 @@ function initFunc(interpreter: any, globalObject: any) {
     globalObject,
     "log",
     interpreter.createNativeFunction(logWrapper)
+  );
+
+  interpreter.setProperty(
+    globalObject,
+    "setTransparent",
+    interpreter.createNativeFunction(setTransparentWrapper)
   );
 }
 

@@ -28,6 +28,7 @@ export interface CodeEditorState {
   editorValue: string;
   runningCode: boolean;
   editorType: "javascript" | "blockly";
+  autoRunChecked: boolean;
 }
 
 interface JSInterpreter {}
@@ -49,6 +50,7 @@ export default class CodeEditor extends React.PureComponent<
       editorValue: DEFAULT_CODE,
       runningCode: false,
       editorType: "blockly",
+      autoRunChecked: true
     };
   }
 
@@ -97,7 +99,10 @@ export default class CodeEditor extends React.PureComponent<
     this.setState({
       editorValue: code,
     });
-    this.onClickRun();
+
+    if (this.state.autoRunChecked) {
+      this.onClickRun();
+    }
   };
 
   onClickRun = () => {
@@ -118,7 +123,9 @@ export default class CodeEditor extends React.PureComponent<
       editorValue: newValue,
     });
 
-    this.onClickRun();
+    if (this.state.autoRunChecked) {
+      this.onClickRun();
+    }
   };
 
   onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -161,6 +168,17 @@ export default class CodeEditor extends React.PureComponent<
     );
   };
 
+  onAutoRunCheckboxChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Run after checking
+    if (event.target.checked) {
+      this.onClickRun();
+    }
+
+    this.setState({
+      autoRunChecked: event.target.checked
+    })
+  }
+
   public render() {
     return (
       <div onKeyDown={this.onKeyDown} className="CodeEditor" id="CodeEditor">
@@ -184,7 +202,7 @@ export default class CodeEditor extends React.PureComponent<
               <Form>
                 <FormGroup check inline>
                   <Label check>
-                    <Input type="checkbox" checked />{" "}
+                    <Input type="checkbox" onChange={this.onAutoRunCheckboxChanged} checked={this.state.autoRunChecked} />{" "}
                     <span className="CodeEditor-Header-Text">Auto-run</span>
                   </Label>
                 </FormGroup>

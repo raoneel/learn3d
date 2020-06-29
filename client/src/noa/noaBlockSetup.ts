@@ -143,7 +143,6 @@ export function getNoaBlockId(hexColor: string) {
     }
   }
 
-  console.log(minDistance, resultIndex);
   return resultIndex;
 }
 

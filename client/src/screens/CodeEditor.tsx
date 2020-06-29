@@ -202,7 +202,7 @@ export default class CodeEditor extends React.PureComponent<
   public render() {
     return (
       <div onKeyDown={this.onKeyDown} className="CodeEditor" id="CodeEditor">
-        <SplitterLayout vertical={true}>
+        <SplitterLayout secondaryInitialSize={20} vertical={true} percentage>
           <div className="CodeEditor-EditorContainer">
             <div className="CodeEditor-Header">
               <Button

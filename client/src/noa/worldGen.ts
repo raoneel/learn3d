@@ -64,6 +64,10 @@ function initFunc(interpreter: any, globalObject: any) {
     }
   }
 
+  function logWrapper(message: string) {
+    store.dispatch(addConsoleMessage(`${message}`))
+  }
+
   function setColorWrapper(hexColor: string) {
     currentColorId = getNoaBlockId(hexColor);
   }
@@ -94,6 +98,12 @@ function initFunc(interpreter: any, globalObject: any) {
     globalObject,
     "setColor",
     interpreter.createNativeFunction(setColorWrapper)
+  );
+
+  interpreter.setProperty(
+    globalObject,
+    "log",
+    interpreter.createNativeFunction(logWrapper)
   );
 }
 

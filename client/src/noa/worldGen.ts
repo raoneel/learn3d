@@ -151,7 +151,7 @@ function stepUntilDone(interpreter: any, onDone: () => void) {
     max: [128, 128, 128],
   });
 
-  store.dispatch(addConsoleMessage("👍 Finished running your code!"));
+  store.dispatch(addConsoleMessage("👍 Your code works!"));
   onDone();
 }
 

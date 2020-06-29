@@ -111,7 +111,7 @@ export function runUserCode(userCode: string, onDone: () => void) {
     myInterpreter.taskId = currentTaskId;
     stepUntilDone(myInterpreter, onDone);
   } catch (e) {
-    console.error(e);
+    store.dispatch(addConsoleMessage(`💔 ${e.name}: ${e.message}`))
   }
 }
 

@@ -13,6 +13,7 @@ import "../blockly/customBlocks";
 import Console from "../components/Console";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 import SplitterLayout from "react-splitter-layout";
+import ErrorModal from "../components/ErrorModal";
 var debounce = require("lodash.debounce");
 
 const DEFAULT_CODE = "";
@@ -29,6 +30,7 @@ export interface CodeEditorState {
   runningCode: boolean;
   editorType: "javascript" | "blockly";
   autoRunChecked: boolean;
+  isWarningModalVisible: boolean;
 }
 
 interface JSInterpreter {}
@@ -50,7 +52,8 @@ export default class CodeEditor extends React.PureComponent<
       editorValue: DEFAULT_CODE,
       runningCode: false,
       editorType: "blockly",
-      autoRunChecked: true
+      autoRunChecked: true,
+      isWarningModalVisible: false
     };
   }
 
@@ -67,7 +70,7 @@ export default class CodeEditor extends React.PureComponent<
 
     if (toolbox) {
       this.blocklyWorkspace = Blockly.inject("blocklyDiv", {
-        toolbox,
+        toolbox
       });
 
       let workspaceBlocks = document.getElementById("workspaceBlocks");
@@ -97,7 +100,7 @@ export default class CodeEditor extends React.PureComponent<
     this.lastCodeHash = currentHash;
 
     this.setState({
-      editorValue: code,
+      editorValue: code
     });
 
     if (this.state.autoRunChecked) {
@@ -107,20 +110,20 @@ export default class CodeEditor extends React.PureComponent<
 
   onClickRun = () => {
     this.setState({
-      runningCode: true,
+      runningCode: true
     });
     debounceRunUserCode(this.state.editorValue, this.onCodeRunningDone);
   };
 
   onCodeRunningDone = () => {
     this.setState({
-      runningCode: false,
+      runningCode: false
     });
   };
 
   onEditorChange = (newValue: string, event: any) => {
     this.setState({
-      editorValue: newValue,
+      editorValue: newValue
     });
 
     if (this.state.autoRunChecked) {
@@ -135,7 +138,7 @@ export default class CodeEditor extends React.PureComponent<
   onResize = (width: number, height: number) => {
     this.setState({
       editorWidth: width,
-      editorHeight: height,
+      editorHeight: height
     });
 
     if (this.blocklyWorkspace) {
@@ -147,10 +150,21 @@ export default class CodeEditor extends React.PureComponent<
    * Switch between javascript and blockly editors
    */
   switchEditor = () => {
+    if (this.state.editorType === "javascript") {
+      this.setState({
+        isWarningModalVisible: true
+      });
+    } else {
+      this.finishSwitchingEditors();
+    }
+  };
+
+  finishSwitchingEditors = () => {
     this.setState(
       {
         editorType:
           this.state.editorType === "javascript" ? "blockly" : "javascript",
+        isWarningModalVisible: false
       },
       () => {
         // Upon switching states, you need to resize the div to show properly
@@ -176,8 +190,14 @@ export default class CodeEditor extends React.PureComponent<
 
     this.setState({
       autoRunChecked: event.target.checked
-    })
-  }
+    });
+  };
+
+  closeWarningModal = () => {
+    this.setState({
+      isWarningModalVisible: false
+    });
+  };
 
   public render() {
     return (
@@ -202,7 +222,11 @@ export default class CodeEditor extends React.PureComponent<
               <Form>
                 <FormGroup check inline>
                   <Label check>
-                    <Input type="checkbox" onChange={this.onAutoRunCheckboxChanged} checked={this.state.autoRunChecked} />{" "}
+                    <Input
+                      type="checkbox"
+                      onChange={this.onAutoRunCheckboxChanged}
+                      checked={this.state.autoRunChecked}
+                    />{" "}
                     <span className="CodeEditor-Header-Text">Auto-run</span>
                   </Label>
                 </FormGroup>
@@ -229,7 +253,7 @@ export default class CodeEditor extends React.PureComponent<
                 height={this.state.editorHeight + "px"}
                 style={{
                   display:
-                    this.state.editorType === "javascript" ? "block" : "none",
+                    this.state.editorType === "javascript" ? "block" : "none"
                 }}
               />
               <div
@@ -237,7 +261,7 @@ export default class CodeEditor extends React.PureComponent<
                   width: this.state.editorWidth,
                   height: this.state.editorHeight,
                   display:
-                    this.state.editorType === "blockly" ? "block" : "none",
+                    this.state.editorType === "blockly" ? "block" : "none"
                 }}
                 id="blocklyDiv"
               ></div>
@@ -247,6 +271,11 @@ export default class CodeEditor extends React.PureComponent<
         </SplitterLayout>
         <BlocklyToolbox />
         <BlocklyWorkspace />
+        <ErrorModal
+          onClose={this.closeWarningModal}
+          onComplete={this.finishSwitchingEditors}
+          isVisible={this.state.isWarningModalVisible}
+        />
       </div>
     );
   }

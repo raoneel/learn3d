@@ -14,6 +14,7 @@ import Console from "../components/Console";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 import SplitterLayout from "react-splitter-layout";
 import ErrorModal from "../components/ErrorModal";
+import { saveWorkspaceFn, getWorkspace } from "../firebase/firebaseInit";
 var debounce = require("lodash.debounce");
 
 const DEFAULT_CODE = "";
@@ -21,7 +22,9 @@ const DEFAULT_CODE = "";
 // Prevent code from being run too often
 const debounceRunUserCode = debounce(runUserCode, 500);
 
-export interface CodeEditorProps {}
+export interface CodeEditorProps {
+  workspaceId: string | undefined;
+}
 
 export interface CodeEditorState {
   editorWidth: number;
@@ -53,24 +56,70 @@ export default class CodeEditor extends React.PureComponent<
       runningCode: false,
       editorType: "blockly",
       autoRunChecked: true,
-      isWarningModalVisible: false
+      isWarningModalVisible: false,
     };
   }
 
-  componentDidMount() {
-    this.initializeBlockly();
-  }
+  componentDidMount = async () => {
+    if (this.props.workspaceId) {
+      // Load Blockly from Firestore
+      let workspace = await getWorkspace(this.props.workspaceId);
+
+      // Load blocks or text code depending on type saved
+      if (workspace) {
+        if (workspace.workspaceType === "BLOCKS") {
+          this.loadBlocklyFromText(workspace.workspaceData);
+        } else if (workspace.workspaceType === "TEXT") {
+
+          // Still initialize blockly in background
+          // But it won't override the incoming code
+          this.setState({
+            editorValue: workspace.workspaceData,
+            editorType: "javascript",
+          }, () => {
+            this.initializeBlockly();
+          });
+          this.onClickRun();
+        }
+      } else {
+        this.initializeBlockly();
+      }
+    } else {
+      this.initializeBlockly();
+    }
+  };
 
   onAceEditorLoad = (editor: any) => {
     this.aceEditor = editor;
   };
 
+  /**
+   * Load incoming XML Blockly workspace text
+   * @param text XML text from Blockly
+   */
+  loadBlocklyFromText(text: string) {
+    let toolbox = document.getElementById("toolbox");
+    let xml = Blockly.Xml.textToDom(text);
+
+    if (toolbox) {
+      this.blocklyWorkspace = Blockly.inject("blocklyDiv", {
+        toolbox,
+      });
+
+      Blockly.Xml.domToWorkspace(xml, this.blocklyWorkspace);
+      this.blocklyWorkspace.addChangeListener(this.onBlocklyUpdate);
+    }
+  }
+
+  /**
+   * Initialize a default blockly view
+   */
   initializeBlockly() {
     let toolbox = document.getElementById("toolbox");
 
     if (toolbox) {
       this.blocklyWorkspace = Blockly.inject("blocklyDiv", {
-        toolbox
+        toolbox,
       });
 
       let workspaceBlocks = document.getElementById("workspaceBlocks");
@@ -99,8 +148,13 @@ export default class CodeEditor extends React.PureComponent<
     }
     this.lastCodeHash = currentHash;
 
+    // If blockly is running in the background, don't update current value
+    if (this.state.editorType === "javascript") {
+      return;
+    }
+
     this.setState({
-      editorValue: code
+      editorValue: code,
     });
 
     if (this.state.autoRunChecked) {
@@ -110,20 +164,20 @@ export default class CodeEditor extends React.PureComponent<
 
   onClickRun = () => {
     this.setState({
-      runningCode: true
+      runningCode: true,
     });
     debounceRunUserCode(this.state.editorValue, this.onCodeRunningDone);
   };
 
   onCodeRunningDone = () => {
     this.setState({
-      runningCode: false
+      runningCode: false,
     });
   };
 
   onEditorChange = (newValue: string, event: any) => {
     this.setState({
-      editorValue: newValue
+      editorValue: newValue,
     });
 
     if (this.state.autoRunChecked) {
@@ -138,7 +192,7 @@ export default class CodeEditor extends React.PureComponent<
   onResize = (width: number, height: number) => {
     this.setState({
       editorWidth: width,
-      editorHeight: height
+      editorHeight: height,
     });
 
     if (this.blocklyWorkspace) {
@@ -152,7 +206,7 @@ export default class CodeEditor extends React.PureComponent<
   switchEditor = () => {
     if (this.state.editorType === "javascript") {
       this.setState({
-        isWarningModalVisible: true
+        isWarningModalVisible: true,
       });
     } else {
       this.finishSwitchingEditors();
@@ -164,7 +218,7 @@ export default class CodeEditor extends React.PureComponent<
       {
         editorType:
           this.state.editorType === "javascript" ? "blockly" : "javascript",
-        isWarningModalVisible: false
+        isWarningModalVisible: false,
       },
       () => {
         // Upon switching states, you need to resize the div to show properly
@@ -189,14 +243,49 @@ export default class CodeEditor extends React.PureComponent<
     }
 
     this.setState({
-      autoRunChecked: event.target.checked
+      autoRunChecked: event.target.checked,
     });
   };
 
   closeWarningModal = () => {
     this.setState({
-      isWarningModalVisible: false
+      isWarningModalVisible: false,
     });
+  };
+
+  onClickSave = async () => {
+    if (this.blocklyWorkspace) {
+      if (this.state.editorType === "blockly") {
+        let dom = Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
+        let text = Blockly.Xml.domToText(dom);
+
+        let workspaceResult = await saveWorkspaceFn({
+          workspaceData: text,
+          workspaceType: "BLOCKS",
+        });
+        console.log("Save successful", workspaceResult.data);
+
+        // Change local route
+        window.history.replaceState(
+          null,
+          document.title,
+          "/space/" + workspaceResult.data
+        );
+      } else if (this.state.editorType === "javascript") {
+        let workspaceResult = await saveWorkspaceFn({
+          workspaceData: this.state.editorValue,
+          workspaceType: "TEXT",
+        });
+        console.log("Save successful", workspaceResult.data);
+
+        // Change local route
+        window.history.replaceState(
+          null,
+          document.title,
+          "/space/" + workspaceResult.data
+        );
+      }
+    }
   };
 
   public render() {
@@ -211,6 +300,13 @@ export default class CodeEditor extends React.PureComponent<
                 onClick={this.onClickRun}
               >
                 Run
+              </Button>
+              <Button
+                className="CodeEditor-Header-Button"
+                color="primary"
+                onClick={this.onClickSave}
+              >
+                Save
               </Button>
               <Button
                 className="CodeEditor-Header-Button"
@@ -253,7 +349,7 @@ export default class CodeEditor extends React.PureComponent<
                 height={this.state.editorHeight + "px"}
                 style={{
                   display:
-                    this.state.editorType === "javascript" ? "block" : "none"
+                    this.state.editorType === "javascript" ? "block" : "none",
                 }}
               />
               <div
@@ -261,7 +357,7 @@ export default class CodeEditor extends React.PureComponent<
                   width: this.state.editorWidth,
                   height: this.state.editorHeight,
                   display:
-                    this.state.editorType === "blockly" ? "block" : "none"
+                    this.state.editorType === "blockly" ? "block" : "none",
                 }}
                 id="blocklyDiv"
               ></div>

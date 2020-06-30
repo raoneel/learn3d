@@ -15,7 +15,7 @@ script:
 deploy:
   provider: firebase
   edge: true # opt in to dpl v2
-  only: hosting
+  only: hosting,functions
   skip_cleanup: true
   token:
     secure: "Cp0wFcNtdqQ1KfoVDqySTps8YnzctNyN4mmPJJwYjlxSX8fhwun5t51uvZruoJ39wXA4+QkX39WfNoXiKVkOIBLZeujmJdGVcjs2okb5Pc3mbsASP/W4AQFnKD8AoNzbPWCZOxLo5Vu4GIqeGbgz4rjz4AntV+trP+6vy3jo6O7n+iGQGdLPXpeFlSc55hRPWzWIDdT7Z6E3mxpfGtqTEMMPRB5HRT0srilcvOqWWkNZdR5g3GAQTNyCRigkuwbPWnNErAbc8egd5ll/kg/ftF0denVPLEDJzbiD9WVFraeeuGtQcQiq1DOIue598hfKfY4KmJPLnkkoikIij+RTCNO6qT5lP2zBpG0+0XbidvHFBFkJuPz8S4x6/Wkit7PvkCqgyNLX41bJegDAyKk934WLtVwR9EKJQi6ABqtAZlRXiLuGlrhrUyyrEc2mtXgrZR8Ov5O8GZeYfn2dqZmwghHfmsBGoPQgMMeOIuEzPMevaZHlRRH+e97k/UTtLC+voewyrZBc6g1rJdyPp7BB1vhnNfwjzR/ud2Y+31j/+OyiCDjogp5rWRcnVg2FCCtt0/TErJnvqJQ6TOCF2klkrRjrEESpSnPpj0jWM8DvuYEsdMEjZAof7W/l9C4Y/H2H1Y/n8q8imZEHF4dts631zqkrnLz1383Q+Wc9zP+aotk="

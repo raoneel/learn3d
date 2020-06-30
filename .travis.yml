@@ -9,7 +9,10 @@ cache:
 install:
   - cd client/
   - yarn install
+  - cd ../firebase/functions
+  - npm install
 script:
+  - cd ../../client
   - npm run build_firebase
   - cd ../firebase
 deploy:

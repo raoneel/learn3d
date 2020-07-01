@@ -157,12 +157,12 @@ function stepUntilDone(interpreter: any, onDone: () => void) {
         return;
       }
   
-      // 70000 steps is just a guess for achieving ~45 FPS
-      // TODO improve performance
-      if (steps > 70000) {
-        requestAnimationFrame(() => {
+      // 70000 steps is just a guess for achieving ~60 FPS
+      // TODO improve performance, adjust based on timing
+      if (steps > 60000) {
+        setTimeout(() => {
           stepUntilDone(interpreter, onDone);
-        });
+        }, 0);
         return;
       }
     }

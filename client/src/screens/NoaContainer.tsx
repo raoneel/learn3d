@@ -33,6 +33,7 @@ export function NoaContainer (props: NoaContainerProps) {
     <div id="NoaContainer">
       <ReactResizeDetector refreshMode="debounce" refreshRate={100} handleWidth handleHeight onResize={onResize} />
       <canvas ref={canvasRef} className="NoaCanvas"></canvas>
+      <div className="NoaContainer-Crosshair"></div>
     </div>
   );
 }

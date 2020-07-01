@@ -2,4 +2,15 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
+  position: relative;
+}
+
+.NoaContainer-Crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 20px;
+  background-color: white;
 }

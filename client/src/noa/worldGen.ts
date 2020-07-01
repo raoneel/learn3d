@@ -1,5 +1,5 @@
 import { noa, DIM, CHUNK_SIZE } from "./noaSetup";
-import { getNoaBlockId, getRandomColorId } from "./noaBlockSetup";
+import { getNoaBlockId, getRandomColorId, GRASS_ID } from "./noaBlockSetup";
 import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { hexToRgb } from "../util/utils";
 import { store } from "../redux/store";
@@ -8,6 +8,7 @@ import { addConsoleMessage, clearConsole } from "../redux/actions/consoleActions
 export let chunkMap = new Map<string, any>();
 let currentColorId = 0;
 let currentTaskId = 0;
+let numBlocks = 0;
 
 function initFunc(interpreter: any, globalObject: any) {
   function setBlockWrapper(x: number, y: number, z: number) {
@@ -45,6 +46,7 @@ function initFunc(interpreter: any, globalObject: any) {
         chunkData = chunkMap.get(chunkId);
       }
 
+      numBlocks++;
       // Get/set blockID on local ndarray
       chunkData.set(innerChunkX, innerChunkY, innerChunkZ, currentColorId);
     }
@@ -121,6 +123,12 @@ export function runUserCode(userCode: string, onDone: () => void) {
   // Clear console on new code run
   store.dispatch(clearConsole());
 
+  // Reset block counter
+  numBlocks = 0;
+
+  // Default color is grass
+  currentColorId = GRASS_ID;
+
   try {
     chunkMap.clear();
     //@ts-ignore
@@ -171,7 +179,7 @@ function stepUntilDone(interpreter: any, onDone: () => void) {
     max: [128, 128, 128],
   });
 
-  store.dispatch(addConsoleMessage("👍 Your code works!"));
+  store.dispatch(addConsoleMessage(`👍 Your code works! Created ${numBlocks} blocks.`));
   onDone();
 }
 

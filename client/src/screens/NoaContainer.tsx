@@ -11,7 +11,7 @@ export function NoaContainer (props: NoaContainerProps) {
 
   React.useEffect(() => {
     initNoa();
-  });
+  }, []);
 
   let onResize = (width: number, height: number) => {
     if (!canvasRef || !canvasRef.current) {

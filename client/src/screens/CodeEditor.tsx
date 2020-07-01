@@ -17,6 +17,7 @@ import ErrorModal from "../components/ErrorModal";
 import { saveWorkspaceFn, getWorkspace } from "../firebase/firebaseInit";
 import { store } from "../redux/store";
 import { addConsoleMessage } from "../redux/actions/consoleActions";
+import { myHistory } from "../util/routing";
 var debounce = require("lodash.debounce");
 
 const DEFAULT_CODE = "";
@@ -26,6 +27,7 @@ const debounceRunUserCode = debounce(runUserCode, 500);
 
 export interface CodeEditorProps {
   workspaceId: string | undefined;
+  setWorkspaceId(newId: string): void;
 }
 
 export interface CodeEditorState {
@@ -60,29 +62,43 @@ export default class CodeEditor extends React.PureComponent<
       editorType: "blockly",
       autoRunChecked: true,
       isWarningModalVisible: false,
-      isSaving: false
+      isSaving: false,
     };
   }
 
   componentDidMount = async () => {
-    if (this.props.workspaceId) {
+    this.loadNewWorkspace(this.props.workspaceId);
+  };
+
+  componentDidUpdate(prevProps: CodeEditorProps) {
+    if (
+      this.props.workspaceId !== prevProps.workspaceId
+    ) {
+      this.loadNewWorkspace(this.props.workspaceId);
+    }
+  }
+
+  loadNewWorkspace = async (workspaceId: string | undefined) => {
+    if (workspaceId) {
       // Load Blockly from Firestore
-      let workspace = await getWorkspace(this.props.workspaceId);
+      let workspace = await getWorkspace(workspaceId);
 
       // Load blocks or text code depending on type saved
       if (workspace) {
         if (workspace.workspaceType === "BLOCKS") {
           this.loadBlocklyFromText(workspace.workspaceData);
         } else if (workspace.workspaceType === "TEXT") {
-
           // Still initialize blockly in background
           // But it won't override the incoming code
-          this.setState({
-            editorValue: workspace.workspaceData,
-            editorType: "javascript",
-          }, () => {
-            this.initializeBlockly();
-          });
+          this.setState(
+            {
+              editorValue: workspace.workspaceData,
+              editorType: "javascript",
+            },
+            () => {
+              this.initializeBlockly();
+            }
+          );
           this.onClickRun();
         }
       } else {
@@ -105,11 +121,14 @@ export default class CodeEditor extends React.PureComponent<
     let toolbox = document.getElementById("toolbox");
     let xml = Blockly.Xml.textToDom(text);
 
-    if (toolbox) {
+    // Only do this on first load
+    if (toolbox && !this.blocklyWorkspace) {
       this.blocklyWorkspace = Blockly.inject("blocklyDiv", {
         toolbox,
       });
+    }
 
+    if (this.blocklyWorkspace) {
       Blockly.Xml.domToWorkspace(xml, this.blocklyWorkspace);
       this.blocklyWorkspace.addChangeListener(this.onBlocklyUpdate);
     }
@@ -273,8 +292,8 @@ export default class CodeEditor extends React.PureComponent<
       }
 
       this.setState({
-        isSaving: true
-      })
+        isSaving: true,
+      });
 
       let workspaceResult = await saveWorkspaceFn({
         workspaceData: text,
@@ -282,17 +301,23 @@ export default class CodeEditor extends React.PureComponent<
       });
 
       this.setState({
-        isSaving: false
+        isSaving: false,
       });
 
-      // Change local route
-      window.history.replaceState(
-        null,
-        document.title,
-        "/space/" + workspaceResult.data
-      );
+      // // Change local route
+      // window.history.replaceState(
+      //   null,
+      //   document.title,
+      //   "/space/" + workspaceResult.data
+      // );
+      this.props.setWorkspaceId(workspaceResult.data);
+      myHistory.push("/space/" + workspaceResult.data);
 
-      store.dispatch(addConsoleMessage(`💾 Code saved! Share the link: ${window.location.href}`));
+      store.dispatch(
+        addConsoleMessage(
+          `💾 Code saved! Share the link: ${window.location.href}`
+        )
+      );
     }
   };
 
@@ -306,7 +331,7 @@ export default class CodeEditor extends React.PureComponent<
     }
 
     return "Save";
-  }
+  };
 
   public render() {
     return (
@@ -334,7 +359,8 @@ export default class CodeEditor extends React.PureComponent<
                 color="info"
                 onClick={this.switchEditor}
               >
-                Switch {this.state.editorType === "blockly" ? "to code" : "to blocks"}
+                Switch{" "}
+                {this.state.editorType === "blockly" ? "to code" : "to blocks"}
               </Button>
               <Form>
                 <FormGroup check inline>

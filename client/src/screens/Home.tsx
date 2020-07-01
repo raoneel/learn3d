@@ -14,16 +14,34 @@ export interface HomeProps extends RouteComponentProps<MatchParams> {}
 export interface HomeState {}
 
 export default class Home extends React.PureComponent<HomeProps, HomeState> {
+  myWorkspaceId: string = "";
+
   constructor(props: HomeProps) {
     super(props);
 
     this.state = {};
   }
+
+  shouldComponentUpdate(nextProps: HomeProps) {
+    // Skip re-render if this was the workspace
+    // You just created
+    if (nextProps.match.params.workspaceId === this.myWorkspaceId) {
+      console.log("skipping rerender");
+      return false;
+    }
+
+    return true;
+  }
+
+  setWorkspaceId = (newId: string) => {
+    this.myWorkspaceId = newId;
+  }
+
   public render() {
     return (
       <SplitterLayout primaryIndex={0} secondaryInitialSize={40} percentage>
         <NoaContainer />
-        <CodeEditor workspaceId={this.props.match.params.workspaceId} />
+        <CodeEditor setWorkspaceId={this.setWorkspaceId} workspaceId={this.props.match.params.workspaceId} />
       </SplitterLayout>
     );
   }

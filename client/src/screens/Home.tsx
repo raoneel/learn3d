@@ -85,7 +85,7 @@ export default class Home extends React.Component<HomeProps, HomeState> {
           </div>
           <div
             onClick={this.onClickSwitchViewMobile}
-            className="Home-MobileSwitcher"
+            className="Home-MobileSwitcher noselect"
           >
             Switch to {this.state.mobileView === "CODE" ? "Game" : "Code"} View
           </div>

@@ -15,6 +15,8 @@ import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 import SplitterLayout from "react-splitter-layout";
 import ErrorModal from "../components/ErrorModal";
 import { saveWorkspaceFn, getWorkspace } from "../firebase/firebaseInit";
+import { store } from "../redux/store";
+import { addConsoleMessage } from "../redux/actions/consoleActions";
 var debounce = require("lodash.debounce");
 
 const DEFAULT_CODE = "";
@@ -34,6 +36,7 @@ export interface CodeEditorState {
   editorType: "javascript" | "blockly";
   autoRunChecked: boolean;
   isWarningModalVisible: boolean;
+  isSaving: boolean;
 }
 
 interface JSInterpreter {}
@@ -57,6 +60,7 @@ export default class CodeEditor extends React.PureComponent<
       editorType: "blockly",
       autoRunChecked: true,
       isWarningModalVisible: false,
+      isSaving: false
     };
   }
 
@@ -255,38 +259,54 @@ export default class CodeEditor extends React.PureComponent<
 
   onClickSave = async () => {
     if (this.blocklyWorkspace) {
+      let text;
+
       if (this.state.editorType === "blockly") {
         let dom = Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
-        let text = Blockly.Xml.domToText(dom);
-
-        let workspaceResult = await saveWorkspaceFn({
-          workspaceData: text,
-          workspaceType: "BLOCKS",
-        });
-        console.log("Save successful", workspaceResult.data);
-
-        // Change local route
-        window.history.replaceState(
-          null,
-          document.title,
-          "/space/" + workspaceResult.data
-        );
+        text = Blockly.Xml.domToText(dom);
       } else if (this.state.editorType === "javascript") {
-        let workspaceResult = await saveWorkspaceFn({
-          workspaceData: this.state.editorValue,
-          workspaceType: "TEXT",
-        });
-        console.log("Save successful", workspaceResult.data);
-
-        // Change local route
-        window.history.replaceState(
-          null,
-          document.title,
-          "/space/" + workspaceResult.data
-        );
+        text = this.state.editorValue;
       }
+
+      if (!text) {
+        return;
+      }
+
+      this.setState({
+        isSaving: true
+      })
+
+      let workspaceResult = await saveWorkspaceFn({
+        workspaceData: text,
+        workspaceType: this.state.editorType === "blockly" ? "BLOCKS" : "TEXT",
+      });
+
+      this.setState({
+        isSaving: false
+      });
+
+      // Change local route
+      window.history.replaceState(
+        null,
+        document.title,
+        "/space/" + workspaceResult.data
+      );
+
+      store.dispatch(addConsoleMessage(`💾 Code saved! Share the link: ${window.location.href}`));
     }
   };
+
+  getSaveButtonText = () => {
+    if (this.state.isSaving) {
+      return "Saving...";
+    }
+
+    if (this.props.workspaceId) {
+      return "Save As";
+    }
+
+    return "Save";
+  }
 
   public render() {
     return (
@@ -305,15 +325,16 @@ export default class CodeEditor extends React.PureComponent<
                 className="CodeEditor-Header-Button"
                 color="primary"
                 onClick={this.onClickSave}
+                disabled={this.state.isSaving}
               >
-                Save
+                {this.getSaveButtonText()}
               </Button>
               <Button
                 className="CodeEditor-Header-Button"
                 color="info"
                 onClick={this.switchEditor}
               >
-                Switch View
+                Switch {this.state.editorType === "blockly" ? "to code" : "to blocks"}
               </Button>
               <Form>
                 <FormGroup check inline>

@@ -13,6 +13,7 @@ import {
   DropdownItem,
   NavbarText
 } from 'reactstrap';
+import { myHistory } from '../util/routing';
 
 const TopNavbar = (props: any) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,16 +38,16 @@ const TopNavbar = (props: any) => {
                 Examples
               </DropdownToggle>
               <DropdownMenu right>
-                <DropdownItem>
+                <DropdownItem onClick={() => myHistory.push("/space/bgy1tHVk")}>
                   Sphere
                 </DropdownItem>
-                <DropdownItem>
+                <DropdownItem onClick={() => myHistory.push("/space/JcjpTqSY")}>
                   Waves
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
           </Nav>
-          <NavbarText>by NeelMango</NavbarText>
+          <NavLink color="light" href="https://neelmango.com">by NeelMango</NavLink>
         </Collapse>
       </Navbar>
     </div>

@@ -25,14 +25,14 @@ firebase
 export let db = firebase.firestore();
 
 // Local testing mode
-if (window.location.hostname === "localhost") {
-  db.settings({
-    host: "localhost:8080",
-    ssl: false,
-  });
+// if (window.location.hostname === "localhost") {
+//   db.settings({
+//     host: "localhost:8080",
+//     ssl: false,
+//   });
 
-  firebase.functions().useFunctionsEmulator("http://localhost:5001");
-}
+//   firebase.functions().useFunctionsEmulator("http://localhost:5001");
+// }
 
 export let saveWorkspaceFn = (firebase
   .functions()

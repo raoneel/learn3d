@@ -11,9 +11,8 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  NavbarText
 } from 'reactstrap';
-import { myHistory } from '../util/routing';
+import { NavLink as RRNavLink } from 'react-router-dom';
 
 const TopNavbar = (props: any) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,20 +27,20 @@ const TopNavbar = (props: any) => {
         <Collapse isOpen={isOpen} navbar>
           <Nav className="mr-auto" navbar>
             <NavItem>
-              <NavLink href="/documentation/">Documentation</NavLink>
+              <NavLink tag={RRNavLink} to="/documentation/">Documentation</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="https://learn3d.io">Videos</NavLink>
+              <NavLink href="#">Videos</NavLink>
             </NavItem>
             <UncontrolledDropdown nav inNavbar>
               <DropdownToggle nav caret>
                 Examples
               </DropdownToggle>
               <DropdownMenu right>
-                <DropdownItem onClick={() => myHistory.push("/space/bgy1tHVk")}>
+                <DropdownItem tag={RRNavLink} exact to="/space/bgy1tHVk">
                   Sphere
                 </DropdownItem>
-                <DropdownItem onClick={() => myHistory.push("/space/JcjpTqSY")}>
+                <DropdownItem tag={RRNavLink} exact to="/space/JcjpTqSY">
                   Waves
                 </DropdownItem>
               </DropdownMenu>

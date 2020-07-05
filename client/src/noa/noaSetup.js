@@ -161,13 +161,6 @@ export function initNoa() {
 
   // each tick, consume any scroll events and use them to zoom camera
   noa.on("tick", function (dt) {
-    var scroll = noa.inputs.state.scrolly;
-    if (scroll !== 0) {
-      noa.camera.zoomDistance += scroll > 0 ? 1 : -1;
-      if (noa.camera.zoomDistance < 0) noa.camera.zoomDistance = 0;
-      if (noa.camera.zoomDistance > 10) noa.camera.zoomDistance = 10;
-    }
-
     // If you fall off the map, reset position and velocity
     if (dat.position[1] < -10) {
       noa.entities.setPosition(player, [50, 5, -5]);

@@ -394,6 +394,7 @@ export default class CodeEditor extends React.PureComponent<
                 setOptions={{ useWorker: false }}
                 width={this.state.editorWidth + "px"}
                 height={this.state.editorHeight + "px"}
+                fontSize={14}
                 style={{
                   display:
                     this.state.editorType === "javascript" ? "block" : "none",

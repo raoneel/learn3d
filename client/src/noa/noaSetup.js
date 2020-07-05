@@ -36,6 +36,7 @@ export function initNoa() {
   };
 
   noa = new Engine(opts);
+  noa.ents.getMovement(1).airJumps = 999
 
   /*
    *

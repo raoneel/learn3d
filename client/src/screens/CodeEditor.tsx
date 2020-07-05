@@ -129,15 +129,20 @@ export default class CodeEditor extends React.PureComponent<
     }
 
     if (this.blocklyWorkspace) {
-      Blockly.Xml.domToWorkspace(xml, this.blocklyWorkspace);
-      this.blocklyWorkspace.addChangeListener(this.onBlocklyUpdate);
+      console.log("append");
+      Blockly.Xml.clearWorkspaceAndLoadFromXml(xml, this.blocklyWorkspace);
     }
   }
 
   /**
    * Initialize a default blockly view
+   * No-op if already initialized.
    */
   initializeBlockly() {
+    if (this.blocklyWorkspace) {
+      return;
+    }
+
     let toolbox = document.getElementById("toolbox");
 
     if (toolbox) {
@@ -164,9 +169,15 @@ export default class CodeEditor extends React.PureComponent<
     //@ts-ignore
     let code = Blockly.JavaScript.workspaceToCode(this.blocklyWorkspace);
 
+    // If you just switched to blocks back from code
+    // You need to re-run
+    // But, the blockly code will remain the same, meaning the hashes will be equal
+    // This forces the code to rerun anyway
+    let isDesync = code !== this.state.editorValue;
+
     // Don't rerun if the code is the same
     let currentHash = hashCode(code);
-    if (currentHash === this.lastCodeHash) {
+    if (currentHash === this.lastCodeHash && !isDesync) {
       return;
     }
     this.lastCodeHash = currentHash;
@@ -178,11 +189,11 @@ export default class CodeEditor extends React.PureComponent<
 
     this.setState({
       editorValue: code,
+    }, () => {
+      if (this.state.autoRunChecked) {
+        this.onClickRun();
+      }
     });
-
-    if (this.state.autoRunChecked) {
-      this.onClickRun();
-    }
   };
 
   onClickRun = () => {
@@ -249,7 +260,8 @@ export default class CodeEditor extends React.PureComponent<
         if (this.state.editorType === "blockly") {
           if (this.blocklyWorkspace) {
             Blockly.svgResize(this.blocklyWorkspace);
-          }
+          }   
+          this.onBlocklyUpdate();
           trackEvent("Editor", "Switch to blocks");
         } else if (this.state.editorType === "javascript") {
           if (this.aceEditor) {

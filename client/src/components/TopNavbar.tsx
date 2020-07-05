@@ -29,9 +29,6 @@ const TopNavbar = (props: any) => {
             <NavItem>
               <NavLink href="/documentation/">Documentation</NavLink>
             </NavItem>
-            <NavItem>
-              <NavLink href="#">Tutorials</NavLink>
-            </NavItem>
             <UncontrolledDropdown nav inNavbar>
               <DropdownToggle nav caret>
                 Examples

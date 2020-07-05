@@ -3,7 +3,10 @@ import { getNoaBlockId, getRandomColorId, GRASS_ID } from "./noaBlockSetup";
 import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { hexToRgb } from "../util/utils";
 import { store } from "../redux/store";
-import { addConsoleMessage, clearConsole } from "../redux/actions/consoleActions";
+import {
+  addConsoleMessage,
+  clearConsole,
+} from "../redux/actions/consoleActions";
 
 export let chunkMap = new Map<string, any>();
 let currentColorId = 0;
@@ -59,15 +62,19 @@ function initFunc(interpreter: any, globalObject: any) {
     if (!parsedRGB) {
       return;
     }
-    
+
     // Set sky (clearColor)
     if (noa) {
-      noa.rendering._scene.clearColor = new Color3(parsedRGB.r / 255.0, parsedRGB.g / 255.0, parsedRGB.b / 255.0);
+      noa.rendering._scene.clearColor = new Color3(
+        parsedRGB.r / 255.0,
+        parsedRGB.g / 255.0,
+        parsedRGB.b / 255.0
+      );
     }
   }
 
   function logWrapper(message: string) {
-    store.dispatch(addConsoleMessage(`${message}`))
+    store.dispatch(addConsoleMessage(`${message}`));
   }
 
   function setColorWrapper(hexColor: string) {
@@ -122,6 +129,7 @@ function initFunc(interpreter: any, globalObject: any) {
 export function runUserCode(userCode: string, onDone: () => void) {
   // Clear console on new code run
   store.dispatch(clearConsole());
+  store.dispatch(addConsoleMessage(`Running your code...`));
 
   // Reset block counter
   numBlocks = 0;
@@ -139,7 +147,7 @@ export function runUserCode(userCode: string, onDone: () => void) {
     myInterpreter.taskId = currentTaskId;
     stepUntilDone(myInterpreter, onDone);
   } catch (e) {
-    store.dispatch(addConsoleMessage(`💔 ${e.name}: ${e.message}`))
+    store.dispatch(addConsoleMessage(`💔 ${e.name}: ${e.message}`));
   }
 }
 
@@ -150,13 +158,13 @@ function stepUntilDone(interpreter: any, onDone: () => void) {
     while (interpreter.step()) {
       interpreter.step();
       steps++;
-  
+
       // If another task is started, cancel this task
       // TODO is there a race condition where the chunkMap isn't cleared properly?
       if (interpreter.taskId !== currentTaskId) {
         return;
       }
-  
+
       // 70000 steps is just a guess for achieving ~60 FPS
       // TODO improve performance, adjust based on timing
       if (steps > 60000) {
@@ -168,10 +176,9 @@ function stepUntilDone(interpreter: any, onDone: () => void) {
     }
   } catch (e) {
     // Display errors in console
-    store.dispatch(addConsoleMessage(`💔 ${e.name}: ${e.message}`))
+    store.dispatch(addConsoleMessage(`💔 ${e.name}: ${e.message}`));
     return;
   }
-
 
   // Invalidate chunks once the data is set
   noa.world.invalidateVoxelsInAABB({
@@ -179,7 +186,10 @@ function stepUntilDone(interpreter: any, onDone: () => void) {
     max: [128, 128, 128],
   });
 
-  store.dispatch(addConsoleMessage(`👍 Your code works! Created ${numBlocks} blocks.`));
+  store.dispatch(clearConsole());
+  store.dispatch(
+    addConsoleMessage(`👍 Your code works! Created ${numBlocks} blocks.`)
+  );
   onDone();
 }
 

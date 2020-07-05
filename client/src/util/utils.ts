@@ -14,3 +14,18 @@ export function hexToRgb(hex: string) {
     b: parseInt(result[3], 16)
   } : null;
 }
+
+/**
+ * Tracks a GA event
+ * @param category Google Analytics category
+ * @param action Google Analytics action
+ */
+export function trackEvent(category: string, action: string) {
+  if (!(window as any).gtag) {
+    return;
+  }
+
+  (window as any).gtag("event", action, {
+    event_category: category,
+  });
+}

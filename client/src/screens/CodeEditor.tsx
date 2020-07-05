@@ -8,7 +8,7 @@ import { runUserCode } from "../noa/worldGen";
 import * as Blockly from "blockly";
 import { BlocklyToolbox } from "../components/BlocklyToolbox";
 import { BlocklyWorkspace } from "../components/BlocklyWorkspace";
-import { hashCode } from "../util/utils";
+import { hashCode, trackEvent } from "../util/utils";
 import "../blockly/customBlocks";
 import Console from "../components/Console";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
@@ -190,6 +190,7 @@ export default class CodeEditor extends React.PureComponent<
       runningCode: true,
     });
     debounceRunUserCode(this.state.editorValue, this.onCodeRunningDone);
+    trackEvent("Editor", "Run");
   };
 
   onCodeRunningDone = () => {
@@ -249,11 +250,13 @@ export default class CodeEditor extends React.PureComponent<
           if (this.blocklyWorkspace) {
             Blockly.svgResize(this.blocklyWorkspace);
           }
+          trackEvent("Editor", "Switch to blocks");
         } else if (this.state.editorType === "javascript") {
           if (this.aceEditor) {
             this.aceEditor.resize();
             this.aceEditor.renderer.updateFull();
           }
+          trackEvent("Editor", "Switch to javascript");
         }
       }
     );
@@ -318,6 +321,7 @@ export default class CodeEditor extends React.PureComponent<
           `💾 Code saved! Share the link: ${window.location.href}`
         )
       );
+      trackEvent("Editor", "Save");
     }
   };
 

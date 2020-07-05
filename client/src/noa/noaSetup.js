@@ -25,7 +25,7 @@ const PLATFORM_Z_END = -12;
 
 export function initNoa() {
   var opts = {
-    debug: true,
+    debug: false,
     showFPS: true,
     chunkSize: CHUNK_SIZE,
     chunkAddDistance: 6.5,

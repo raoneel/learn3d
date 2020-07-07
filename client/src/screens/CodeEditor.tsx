@@ -86,6 +86,7 @@ export default class CodeEditor extends React.PureComponent<
       // Load blocks or text code depending on type saved
       if (workspace) {
         if (workspace.workspaceType === "BLOCKS") {
+          this.initializeBlockly(false);
           this.loadBlocklyFromText(workspace.workspaceData);
         } else if (workspace.workspaceType === "TEXT") {
           // Still initialize blockly in background
@@ -96,16 +97,18 @@ export default class CodeEditor extends React.PureComponent<
               editorType: "javascript",
             },
             () => {
-              this.initializeBlockly();
+              this.initializeBlockly(true);
             }
           );
           this.onClickRun();
         }
       } else {
-        this.initializeBlockly();
+        // Workspace not found from ID
+        this.initializeBlockly(true);
       }
     } else {
-      this.initializeBlockly();
+      // Default root page, no ID specified
+      this.initializeBlockly(true);
     }
   };
 
@@ -118,27 +121,19 @@ export default class CodeEditor extends React.PureComponent<
    * @param text XML text from Blockly
    */
   loadBlocklyFromText(text: string) {
-    let toolbox = document.getElementById("toolbox");
     let xml = Blockly.Xml.textToDom(text);
-
-    // Only do this on first load
-    if (toolbox && !this.blocklyWorkspace) {
-      this.blocklyWorkspace = Blockly.inject("blocklyDiv", {
-        toolbox,
-      });
-    }
-
     if (this.blocklyWorkspace) {
-      console.log("append");
       Blockly.Xml.clearWorkspaceAndLoadFromXml(xml, this.blocklyWorkspace);
+      this.onBlocklyUpdate();
     }
   }
 
   /**
    * Initialize a default blockly view
    * No-op if already initialized.
+   * @param isDefault Show the default empty state or not
    */
-  initializeBlockly() {
+  initializeBlockly(isDefault: boolean) {
     if (this.blocklyWorkspace) {
       return;
     }
@@ -149,15 +144,14 @@ export default class CodeEditor extends React.PureComponent<
       this.blocklyWorkspace = Blockly.inject("blocklyDiv", {
         toolbox,
       });
+      this.blocklyWorkspace.addChangeListener(this.onBlocklyUpdate);
 
       let workspaceBlocks = document.getElementById("workspaceBlocks");
       /* Load blocks to workspace. */
 
-      if (workspaceBlocks) {
+      if (workspaceBlocks && isDefault) {
         Blockly.Xml.domToWorkspace(workspaceBlocks, this.blocklyWorkspace);
       }
-
-      this.blocklyWorkspace.addChangeListener(this.onBlocklyUpdate);
     }
   }
 

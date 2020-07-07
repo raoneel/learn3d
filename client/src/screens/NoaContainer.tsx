@@ -3,10 +3,7 @@ import { initNoa } from '../noa/noaSetup';
 import ReactResizeDetector from 'react-resize-detector';
 import "./NoaContainer.scss";
 
-export interface NoaContainerProps {
-}
-
-export function NoaContainer (props: NoaContainerProps) {
+export function NoaContainer () {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   React.useEffect(() => {

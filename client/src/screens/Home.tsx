@@ -5,7 +5,6 @@ import CodeEditor from "./CodeEditor";
 import { NoaContainer } from "./NoaContainer";
 import { RouteComponentProps } from "react-router-dom";
 import "./Home.scss";
-import ReactResizeDetector from "react-resize-detector";
 
 interface MatchParams {
   workspaceId: string;
@@ -51,12 +50,6 @@ export default class Home extends React.Component<HomeProps, HomeState> {
     });
   };
 
-  onResize = (width: number, height: number) => {
-    this.setState({
-      deviceWidth: width,
-    });
-  };
-
   public render() {
     // Mobile Layout
     if (this.state.deviceWidth < 800) {
@@ -89,12 +82,6 @@ export default class Home extends React.Component<HomeProps, HomeState> {
           >
             Switch to {this.state.mobileView === "CODE" ? "Game" : "Code"} View
           </div>
-          <ReactResizeDetector
-            refreshMode="debounce"
-            refreshRate={100}
-            handleWidth
-            onResize={this.onResize}
-          />
         </div>
       );
     }
@@ -105,12 +92,6 @@ export default class Home extends React.Component<HomeProps, HomeState> {
         <CodeEditor
           setWorkspaceId={this.setWorkspaceId}
           workspaceId={this.props.match.params.workspaceId}
-        />
-        <ReactResizeDetector
-          refreshMode="debounce"
-          refreshRate={100}
-          handleWidth
-          onResize={this.onResize}
         />
       </SplitterLayout>
     );

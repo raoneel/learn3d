@@ -117,8 +117,9 @@ export function initNoa() {
     // offset vector is needed because noa positions are always the
     // bottom-center of the entity, and Babylon's CreateBox gives a
     // mesh registered at the center of the box
-    offset: [0, h / 2, 0],
+    offset: [0, h / 2, 0]
   });
+  noa.entities.removeComponent(player, 'shadow');
 
   /*
    *

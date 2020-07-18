@@ -17,7 +17,8 @@ export async function saveWorkspaceFirestore(
   await db.collection(WORKSPACE_COLLECTION).doc(workspaceId).create({
     workspaceData,
     workspaceType,
-    authorUid
+    authorUid,
+    createDate: new Date()
   });
 
   return workspaceId;

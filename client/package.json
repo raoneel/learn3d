@@ -22,7 +22,7 @@
     "firebase": "^7.15.5",
     "lodash.debounce": "^4.0.8",
     "noa-engine": "github:andyhall/noa#develop",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "react": "^16.13.1",
     "react-ace": "^9.0.0",
     "react-dom": "^16.13.1",
